@@ -1,0 +1,14 @@
+spotify:
+  client_id: xxx
+  client_secret: xxx
+  scopes:
+    - user-read-currently-playing
+    - playlist-read-private
+    - playlist-modify-private
+    - user-read-private
+    - playlist-modify-public
+mysql:
+  host: pizza
+  database: pizza
+  username: pizza
+  password: pizza

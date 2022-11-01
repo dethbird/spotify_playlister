@@ -1,3 +1,4 @@
 .vscode
 vendor
 public/error_log
+config.yml

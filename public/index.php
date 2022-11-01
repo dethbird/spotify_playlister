@@ -9,12 +9,10 @@ session_cache_limiter(false);
 session_start();
 
 # Ensure src/ is on include_path
-set_include_path(implode(PATH_SEPARATOR, array(
+set_include_path(implode(PATH_SEPARATOR,[
     APPLICATION_PATH ,
-    APPLICATION_PATH . 'library',
     get_include_path(),
-)));
-
+]));
 
 require '../vendor/autoload.php';
 
@@ -23,25 +21,67 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
 use Slim\Factory\AppFactory;
+use Symfony\Component\Yaml\Yaml;
 
 
-// Create app
+# read config
+$config = Yaml::parseFile(APPLICATION_PATH . 'config.yml');
+
+# initialize spotify client
+$spotifyClient = new SpotifyWebAPI\Session(
+    $config['spotify']['client_id'],
+    $config['spotify']['client_secret'],
+    $_SERVER['SCRIPT_URI'].'callback'
+);
+
+# create app
 $app = AppFactory::create();
-
 $twig = Twig::create('../views',
     ['cache' => false]);
 
-// Add Twig-View Middleware
+# add Twig-View Middleware
 $app->add(TwigMiddleware::create($app, $twig));
 
+# ROUTES
 
-# all GET routes
-$app->get('/', function (Request $request, Response $response, $args) {
+
+# callback
+$app->get('/callback', function (Request $request, Response $response, $args) use ($spotifyClient, $config) {
+
+    if (isset($_GET['error'])) {
+        header('Location: /');
+    }
 
     $view = Twig::fromRequest($request);
+    
+    # verify state
+
+    # get access token and put in session
+
+    # create user if not in db 
+
+    # redirect to home
+
+    
+})->setName('callback');
+
+# index
+$app->get('/', function (Request $request, Response $response, $args) use ($spotifyClient, $config) {
+
+    $view = Twig::fromRequest($request);
+
+    if (!isset($_SESSION['SPOTIFY_ACCESS_TOKEN'])) {
+        $_SESSION['SPOTIFY_STATE'] = $spotifyClient->generateState();
+        return $view->render($response, 'login.html', [
+            'login_url' => $spotifyClient->getAuthorizeUrl([
+                'scope' => $config['spotify']['scopes'],
+                'state' => $_SESSION['SPOTIFY_STATE']
+            ])
+        ]);
+    }
     return $view->render($response, 'index.html', [
         'prompt' => 'pizza'
     ]);
-})->setName('printPrompt');
+})->setName('index');
 
 $app->run();
