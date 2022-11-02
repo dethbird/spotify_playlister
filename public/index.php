@@ -147,6 +147,12 @@ $app->group('/api/v1', function (RouteCollectorProxy $group) use ($spotifyApi, $
                 return $response->withHeader('Content-type', 'application/json');
             })->setName('currentlyPlaying');
         });
+        $group->group('/tracks', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
+            $group->get('/contains', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
+                $response->getBody()->write(json_encode($spotifyApi->myTracksContains(explode(",", $_GET['ids']))));
+                return $response->withHeader('Content-type', 'application/json');
+            })->setName('currentlyPlaying');
+        });
     });
 });
 
