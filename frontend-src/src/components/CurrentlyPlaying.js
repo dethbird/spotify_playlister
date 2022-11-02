@@ -1,5 +1,8 @@
+import axios from 'axios';
 import React, { useState, useEffect } from "react";
-import { Icon, Item, Loader, Segment } from 'semantic-ui-react'
+import { Item, Loader, Segment } from 'semantic-ui-react'
+
+import LikeButton from '../components/LikeButton';
 
 function CurrentlyPlaying() {
     const [error, setError] = useState(null);
@@ -7,16 +10,15 @@ function CurrentlyPlaying() {
     const [playingitem, sePlayingItem] = useState([]);
 
     useEffect(() => {
-        fetch("/api/v1/me/player/currently-playing")
-          .then(res => res.json())
+        axios.get("/api/v1/me/player/currently-playing")
           .then(
             (result) => {
-              setIsLoaded(true);
-              sePlayingItem(result);
+                setIsLoaded(true);
+                sePlayingItem(result.data);
             },
             (error) => {
-              setIsLoaded(true);
-              setError(error);
+                setIsLoaded(true);
+                setError(error);
             }
           )
     }, [])
@@ -40,7 +42,7 @@ function CurrentlyPlaying() {
                                 </Item.Meta>
                                 <Item.Description>{ playingitem.item.artists[0].name }</Item.Description>
                                 <Item.Extra>
-                                    <Icon name='like' />
+                                    <LikeButton trackId={ playingitem.item.id } />
                                 </Item.Extra>
                             </Item.Content>
                         </Item>

@@ -138,8 +138,6 @@ $app->get('/', function (Request $request, Response $response, $args) use ($spot
 })->setName('index');
 
 $app->group('/api/v1', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
-    // $app->response->headers->set('Content-Type', 'application/json');
-    // print_r($app); die();
     $group->group('/me', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
         $group->group('/player', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
             $group->get('/currently-playing', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
@@ -147,11 +145,19 @@ $app->group('/api/v1', function (RouteCollectorProxy $group) use ($spotifyApi, $
                 return $response->withHeader('Content-type', 'application/json');
             })->setName('currentlyPlaying');
         });
+        $group->delete('/tracks', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
+            $response->getBody()->write(json_encode($spotifyApi->deleteMyTracks(explode(",", $_GET['ids']))));
+            return $response->withHeader('Content-type', 'application/json');
+        })->setName('trackUnlike');
+        $group->put('/tracks', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
+            $response->getBody()->write(json_encode($spotifyApi->addMyTracks(explode(",", $_GET['ids']))));
+            return $response->withHeader('Content-type', 'application/json');
+        })->setName('trackLike');
         $group->group('/tracks', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
             $group->get('/contains', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
                 $response->getBody()->write(json_encode($spotifyApi->myTracksContains(explode(",", $_GET['ids']))));
                 return $response->withHeader('Content-type', 'application/json');
-            })->setName('currentlyPlaying');
+            })->setName('trackIsLiked');
         });
     });
 });
