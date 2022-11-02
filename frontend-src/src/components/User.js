@@ -1,4 +1,4 @@
-import { Image } from 'semantic-ui-react';
+import { Button, Icon, Image } from 'semantic-ui-react';
 
 function User() {
     const user_image = window.spotify_user.images[0].url
@@ -6,6 +6,7 @@ function User() {
         <div>
             <Image avatar src={ user_image } />
             <span>{ window.spotify_user.display_name }</span>
+            &nbsp;&nbsp;<a href="/logout" title="Logout"><Icon name='sign-out' size='small' /></a>
         </div>
     );
   }
