@@ -16,6 +16,7 @@ set_include_path(implode(PATH_SEPARATOR,[
 
 require '../vendor/autoload.php';
 
+require APPLICATION_PATH . 'lib/redbeans/rb-mysql.php';
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -27,13 +28,23 @@ use Symfony\Component\Yaml\Yaml;
 # read config
 $config = Yaml::parseFile(APPLICATION_PATH . 'config.yml');
 
+# intialize db connector
+R::setup( 'mysql:host='.$config['mysql']['host'].';dbname='.$config['mysql']['database'],
+    $config['mysql']['username'], $config['mysql']['password'] );
+R::freeze( true );
+
 # initialize spotify client
-$spotifyClient = new SpotifyWebAPI\Session(
+$spotifyConnect = new SpotifyWebAPI\Session(
     $config['spotify']['client_id'],
     $config['spotify']['client_secret'],
-    $_SERVER['SCRIPT_URI'].'callback'
+    'https://'.$_SERVER['HTTP_HOST'].'/callback'
 );
+$spotifyApi = new SpotifyWebAPI\SpotifyWebAPI();
+if (isset($_SESSION['SPOTIFY_ACCESS_TOKEN'])) {
+    $spotifyApi->setAccessToken($_SESSION['SPOTIFY_ACCESS_TOKEN']);
+}
 
+// var_dump('https://'.$_SERVER['HTTP_HOST'].'/callback'); die();
 # create app
 $app = AppFactory::create();
 $twig = Twig::create('../views',
@@ -44,36 +55,65 @@ $app->add(TwigMiddleware::create($app, $twig));
 
 # ROUTES
 
-
 # callback
-$app->get('/callback', function (Request $request, Response $response, $args) use ($spotifyClient, $config) {
+$app->get('/callback', function (Request $request, Response $response, $args) use ($spotifyConnect, $spotifyApi) {
 
+    # check for error
     if (isset($_GET['error'])) {
         header('Location: /');
     }
 
-    $view = Twig::fromRequest($request);
-    
     # verify state
-
+    if (isset($_SESSION['SPOTIFY_STATE']) && isset($_GET['state'])) {
+        if ($_SESSION['SPOTIFY_STATE'] !== $_GET['state']) {
+            header('Location: /');
+        }
+    }
+    
     # get access token and put in session
+    $spotifyConnect->requestAccessToken($_GET['code']);
+    $_SESSION['SPOTIFY_ACCESS_TOKEN'] = $spotifyConnect->getAccessToken();
+    $_SESSION['SPOTIFY_REFRESH_TOKEN']= $spotifyConnect->getRefreshToken();
 
-    # create user if not in db 
+    # create user if not in db
+    $spotifyApi->setAccessToken($_SESSION['SPOTIFY_ACCESS_TOKEN']);
+    $me = $spotifyApi->me();
+
+    $users = R::find(
+        'user', ' spotify_user_id = ?', [ $me->id ] );
+
+    if (count($users) == 0){
+        $user = R::dispense( 'user' );
+        $user->spotify_user_id = $me->id;
+        $id = R::store( $user );
+    }
 
     # redirect to home
-
+    header('Location: /');
     
 })->setName('callback');
 
+# logout
+$app->get('/logout', function (Request $request, Response $response, $args) {
+
+    unset($_SESSION['SPOTIFY_ACCESS_TOKEN']);
+    unset($_SESSION['SPOTIFY_REFRESH_TOKEN']);
+
+    # redirect to home
+    header('Location: /');
+
+    
+})->setName('logout');
+
 # index
-$app->get('/', function (Request $request, Response $response, $args) use ($spotifyClient, $config) {
+$app->get('/', function (Request $request, Response $response, $args) use ($spotifyConnect, $config) {
 
     $view = Twig::fromRequest($request);
 
     if (!isset($_SESSION['SPOTIFY_ACCESS_TOKEN'])) {
-        $_SESSION['SPOTIFY_STATE'] = $spotifyClient->generateState();
+        $_SESSION['SPOTIFY_STATE'] = $spotifyConnect->generateState();
         return $view->render($response, 'login.html', [
-            'login_url' => $spotifyClient->getAuthorizeUrl([
+            'login_url' => $spotifyConnect->getAuthorizeUrl([
                 'scope' => $config['spotify']['scopes'],
                 'state' => $_SESSION['SPOTIFY_STATE']
             ])
@@ -85,3 +125,5 @@ $app->get('/', function (Request $request, Response $response, $args) use ($spot
 })->setName('index');
 
 $app->run();
+
+R::close();
