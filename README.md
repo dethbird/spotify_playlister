@@ -2,7 +2,10 @@
 Spotify playlister - add / remove currently playing song from multiple playlists
 
 ```bash
-cp frontend-src/build/static/css/main.073c9b0a.css public/css/main.css
-cp frontend-src/build/static/js/main.c611c324.js public/js/main.js
-cp frontend-src/build/static/js/main.c611c324.js.map public/js/main.js.map
+# in frontend-src/
+npm run build
+
+cp build/static/css/main.9b2469a9.css ../public/css/main.css
+cp build/static/js/main.63c6d7c9.js ../public/js/main.js
+cp build/static/js/main.9cc2035e.js.map ../public/js/main.js.map
 ```

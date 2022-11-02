@@ -1,22 +1,19 @@
-import './App.css';
+import Index from './pages/Index'
+import Login from './pages/Login'
+
+function authRender() {
+  if (window.user === null) {
+    return <Login />
+  } else {
+    return <Index />
+  }
+}
 
 function App() {
   console.log(window.user, window.spotify_user);
   return (
     <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+        { authRender() }
     </div>
   );
 }

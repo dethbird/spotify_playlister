@@ -111,13 +111,12 @@ $app->get('/', function (Request $request, Response $response, $args) use ($spot
     $view = Twig::fromRequest($request);
     $spotify_user = null;
     $user = null;
+    $login_url = null;
     if (!isset($_SESSION['SPOTIFY_ACCESS_TOKEN'])) {
         $_SESSION['SPOTIFY_STATE'] = $spotifyConnect->generateState();
-        return $view->render($response, 'login.html', [
-            'login_url' => $spotifyConnect->getAuthorizeUrl([
-                'scope' => $config['spotify']['scopes'],
-                'state' => $_SESSION['SPOTIFY_STATE']
-            ])
+        $login_url = $spotifyConnect->getAuthorizeUrl([
+            'scope' => $config['spotify']['scopes'],
+            'state' => $_SESSION['SPOTIFY_STATE']
         ]);
     } else {
         $spotify_user = $spotifyApi->me();
@@ -128,6 +127,7 @@ $app->get('/', function (Request $request, Response $response, $args) use ($spot
     return $view->render($response, 'index.html', [
         'spotify_user_json' => json_encode($spotify_user),
         'user_json' => json_encode($user),
+        'login_url' => $login_url
     ]);
 })->setName('index');
 
