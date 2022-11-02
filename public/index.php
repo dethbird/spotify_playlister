@@ -19,6 +19,7 @@ require '../vendor/autoload.php';
 require APPLICATION_PATH . 'lib/redbeans/rb-mysql.php';
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Routing\RouteCollectorProxy;
 use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
 use Slim\Factory\AppFactory;
@@ -135,6 +136,19 @@ $app->get('/', function (Request $request, Response $response, $args) use ($spot
         'login_url' => $login_url
     ]);
 })->setName('index');
+
+$app->group('/api/v1', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
+    // $app->response->headers->set('Content-Type', 'application/json');
+    // print_r($app); die();
+    $group->group('/me', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
+        $group->group('/player', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
+            $group->get('/currently-playing', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
+                $response->getBody()->write(json_encode($spotifyApi->getMyCurrentPlaybackInfo()));
+                return $response->withHeader('Content-type', 'application/json');
+            })->setName('currentlyPlaying');
+        });
+    });
+});
 
 $app->run();
 

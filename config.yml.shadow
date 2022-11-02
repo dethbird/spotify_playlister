@@ -2,6 +2,7 @@ spotify:
   client_id: xxx
   client_secret: xxx
   scopes:
+    - user-read-playback-state
     - user-read-currently-playing
     - playlist-read-private
     - playlist-modify-private
