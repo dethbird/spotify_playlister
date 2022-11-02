@@ -119,10 +119,15 @@ $app->get('/', function (Request $request, Response $response, $args) use ($spot
             'state' => $_SESSION['SPOTIFY_STATE']
         ]);
     } else {
-        $spotify_user = $spotifyApi->me();
-        $users = R::find(
-            'user', ' spotify_user_id = ?', [ $spotify_user->id ] );
-        $user = $users[1];
+        try {
+            $spotify_user = $spotifyApi->me();
+            $users = R::find(
+                'user', ' spotify_user_id = ?', [ $spotify_user->id ] );
+            $user = $users[1];
+        } catch (Exception $e) {
+            // header('Location: /logout');
+            # noop
+        }
     }
     return $view->render($response, 'index.html', [
         'spotify_user_json' => json_encode($spotify_user),
