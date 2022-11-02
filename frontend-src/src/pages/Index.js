@@ -9,10 +9,10 @@ function Index() {
     <Container>
       <Grid>
         <Grid.Column floated='left' width={8}>
-          <User />
-        </Grid.Column>
-        <Grid.Column floated='right' width={8}>
           <CurrentlyPlaying />
+        </Grid.Column>
+        <Grid.Column floated='right' textAlign='right' width={8}>
+          <User />
         </Grid.Column>
       </Grid>
       <PlaylistSelection />
