@@ -106,10 +106,11 @@ $app->get('/logout', function (Request $request, Response $response, $args) {
 })->setName('logout');
 
 # index
-$app->get('/', function (Request $request, Response $response, $args) use ($spotifyConnect, $config) {
+$app->get('/', function (Request $request, Response $response, $args) use ($spotifyConnect, $spotifyApi, $config) {
 
     $view = Twig::fromRequest($request);
-
+    $spotify_user = null;
+    $user = null;
     if (!isset($_SESSION['SPOTIFY_ACCESS_TOKEN'])) {
         $_SESSION['SPOTIFY_STATE'] = $spotifyConnect->generateState();
         return $view->render($response, 'login.html', [
@@ -118,9 +119,15 @@ $app->get('/', function (Request $request, Response $response, $args) use ($spot
                 'state' => $_SESSION['SPOTIFY_STATE']
             ])
         ]);
+    } else {
+        $spotify_user = $spotifyApi->me();
+        $users = R::find(
+            'user', ' spotify_user_id = ?', [ $spotify_user->id ] );
+        $user = $users[1];
     }
     return $view->render($response, 'index.html', [
-        'prompt' => 'pizza'
+        'spotify_user_json' => json_encode($spotify_user),
+        'user_json' => json_encode($user),
     ]);
 })->setName('index');
 

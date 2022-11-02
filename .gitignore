@@ -3,3 +3,4 @@ vendor
 public/error_log
 config.yml
 fronted-src/node_modules
+fronted-src/build/static
