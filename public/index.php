@@ -54,6 +54,11 @@ $twig = Twig::create('../views',
 # add Twig-View Middleware
 $app->add(TwigMiddleware::create($app, $twig));
 
+function performLogout() {
+    unset($_SESSION['SPOTIFY_ACCESS_TOKEN']);
+    unset($_SESSION['SPOTIFY_REFRESH_TOKEN']);
+}
+
 # ROUTES
 
 # callback
@@ -97,9 +102,7 @@ $app->get('/callback', function (Request $request, Response $response, $args) us
 # logout
 $app->get('/logout', function (Request $request, Response $response, $args) {
 
-    unset($_SESSION['SPOTIFY_ACCESS_TOKEN']);
-    unset($_SESSION['SPOTIFY_REFRESH_TOKEN']);
-
+    performLogout();
     # redirect to home
     header('Location: /');
 
@@ -126,7 +129,8 @@ $app->get('/', function (Request $request, Response $response, $args) use ($spot
                 'user', ' spotify_user_id = ?', [ $spotify_user->id ] );
             $user = $users[1];
         } catch (Exception $e) {
-            // header('Location: /logout');
+            performLogout();
+            header('Location: /');
             # noop
         }
     }

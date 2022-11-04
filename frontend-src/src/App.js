@@ -1,5 +1,5 @@
-import { Container } from 'semantic-ui-react'
 
+import './App.css';
 import Index from './pages/Index'
 import Login from './pages/Login'
 
@@ -14,7 +14,7 @@ function authRender() {
 function App() {
   console.log(window.user, window.spotify_user);
   return (
-    <div>
+    <div className='App'>
         { authRender() }
     </div>
   );

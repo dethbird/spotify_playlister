@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useState, useEffect } from "react";
-import { Item, Loader, Segment } from 'semantic-ui-react'
+import { Button, Item, Loader, Segment } from 'semantic-ui-react'
 
 import LikeButton from '../components/LikeButton';
 
@@ -43,6 +43,10 @@ function CurrentlyPlaying() {
                                 <Item.Description>{ playingitem.item.artists[0].name }</Item.Description>
                                 <Item.Extra>
                                     <LikeButton trackId={ playingitem.item.id } />
+                                    <Button.Group>
+                                        <Button basic color='green' icon='plus circle' title='Add to Selected Playlists' />
+                                        <Button basic color='grey' icon='times circle' title='Remove from Selected Playlists' />
+                                    </Button.Group>
                                 </Item.Extra>
                             </Item.Content>
                         </Item>

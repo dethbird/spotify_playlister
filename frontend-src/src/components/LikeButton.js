@@ -63,6 +63,7 @@ function LikeButton(props) {
                     color={likedResponse[0] ? 'pink' : 'grey'}
                     name='like'
                     onClick={ toggleLiked }
+                    title='Like / Unlike'
                 />
             );
         }

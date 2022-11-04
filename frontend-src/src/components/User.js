@@ -1,4 +1,4 @@
-import { Button, Icon, Image } from 'semantic-ui-react';
+import { Icon, Image } from 'semantic-ui-react';
 
 function User() {
     const user_image = window.spotify_user.images[0].url
