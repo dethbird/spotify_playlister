@@ -93,7 +93,9 @@ $app->get('/callback', function (Request $request, Response $response, $args) us
     if (count($users) == 0){
         $user = R::dispense( 'user' );
         $user->spotify_user_id = $me->id;
-        $id = R::store( $user );
+        $_SESSION['USER_ID'] = R::store( $user );
+    } else {
+        $_SESSION['USER_ID'] = $users[1]->id;
     }
 
     # redirect to home
@@ -143,37 +145,49 @@ $app->get('/', function (Request $request, Response $response, $args) use ($spot
     ]);
 })->setName('index');
 
-$app->group('/api/v1', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
-    $group->group('/me', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
-        $group->get('/playlists', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
-            $response->getBody()->write(json_encode($spotifyApi->getMyPlaylists([
-                'limit' => (int)$_GET['limit'],
-                'offset' => (int)$_GET['offset']
-            ])));
-            return $response->withHeader('Content-type', 'application/json');
-        })->setName('getPlaylists');
-        $group->group('/player', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
-            $group->get('/currently-playing', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
-                $response->getBody()->write(json_encode($spotifyApi->getMyCurrentPlaybackInfo()));
+$app->group('/api', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
+    $group->group('/v1', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
+        $group->group('/me', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
+            $group->get('/playlists', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
+                $response->getBody()->write(json_encode($spotifyApi->getMyPlaylists([
+                    'limit' => (int)$_GET['limit'],
+                    'offset' => (int)$_GET['offset']
+                ])));
                 return $response->withHeader('Content-type', 'application/json');
-            })->setName('currentlyPlaying');
-        });
-        $group->delete('/tracks', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
-            $response->getBody()->write(json_encode($spotifyApi->deleteMyTracks(explode(",", $_GET['ids']))));
-            return $response->withHeader('Content-type', 'application/json');
-        })->setName('trackUnlike');
-        $group->put('/tracks', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
-            $response->getBody()->write(json_encode($spotifyApi->addMyTracks(explode(",", $_GET['ids']))));
-            return $response->withHeader('Content-type', 'application/json');
-        })->setName('trackLike');
-        $group->group('/tracks', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
-            $group->get('/contains', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
-                $response->getBody()->write(json_encode($spotifyApi->myTracksContains(explode(",", $_GET['ids']))));
+            })->setName('getPlaylists');
+            $group->group('/player', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
+                $group->get('/currently-playing', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
+                    $response->getBody()->write(json_encode($spotifyApi->getMyCurrentPlaybackInfo()));
+                    return $response->withHeader('Content-type', 'application/json');
+                })->setName('currentlyPlaying');
+            });
+            $group->delete('/tracks', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
+                $response->getBody()->write(json_encode($spotifyApi->deleteMyTracks(explode(",", $_GET['ids']))));
                 return $response->withHeader('Content-type', 'application/json');
-            })->setName('trackIsLiked');
+            })->setName('trackUnlike');
+            $group->put('/tracks', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
+                $response->getBody()->write(json_encode($spotifyApi->addMyTracks(explode(",", $_GET['ids']))));
+                return $response->withHeader('Content-type', 'application/json');
+            })->setName('trackLike');
+            $group->group('/tracks', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
+                $group->get('/contains', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
+                    $response->getBody()->write(json_encode($spotifyApi->myTracksContains(explode(",", $_GET['ids']))));
+                    return $response->withHeader('Content-type', 'application/json');
+                })->setName('trackIsLiked');
+            });
         });
     });
+    $group->group('/app', function (RouteCollectorProxy $group) use ($app) {
+        $group->get('/playlists', function (Request $request, Response $response, $args) use ($app) {
+            $playlists = R::find(
+                'user_playlist', ' user_id = ?', [ $_SESSION['USER_ID'] ] );
+            $response->getBody()->write(json_encode($playlists));
+            return $response->withHeader('Content-type', 'application/json');
+        })->setName('userPlaylists');
+    });
 });
+
+
 
 $app->run();
 
