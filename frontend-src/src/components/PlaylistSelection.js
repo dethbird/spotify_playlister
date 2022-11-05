@@ -1,7 +1,9 @@
 import axios from 'axios';
 import React, { useState, useEffect } from "react";
-import { Button, Loader } from 'semantic-ui-react';
+import { Button, Item, Loader } from 'semantic-ui-react';
 import AddPlaylistModal from './AddPlaylistModal';
+import PlaylistSelectionItem from './PlaylistSelectionItem';
+
 
 function PlaylistSelection() {
     const [error, setError] = useState(null);
@@ -34,7 +36,7 @@ function PlaylistSelection() {
         } else {
             if (playlists.length) {
                 return playlists.map(playlist => (
-                    <div>{ playlist.spotify_playlist_id }</div>
+                    <PlaylistSelectionItem spotifyPlaylistId={ playlist.spotify_playlist_id } />
                 ));
             }
         }
@@ -48,7 +50,7 @@ function PlaylistSelection() {
             <Button basic color='grey' icon='check square outline' title='Select None' />
             <Button basic color='grey' icon='exchange' title='Invert Selection' />
         </Button.Group>
-        <div>{ renderPlaylists() }</div>
+        <Item.Group divided link>{ renderPlaylists() }</Item.Group>
       </div>
     );
   }

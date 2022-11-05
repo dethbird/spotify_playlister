@@ -87,7 +87,7 @@ $app->get('/callback', function (Request $request, Response $response, $args) us
     $_SESSION['SPOTIFY_USER_ID'] = $me->id;
 
     $users = array_values(R::find(
-        'user', ' spotify_user_id = ?', [ $me->id ] ));
+        'user', ' spotify_user_id = ? LIMIT 1', [ $me->id ] ));
     
     if (count($users) == 0){
         $user = R::dispense( 'user' );
@@ -192,7 +192,7 @@ $app->group('/api', function (RouteCollectorProxy $group) use ($spotifyApi, $app
                 )
             );
             return $response->withHeader('Content-type', 'application/json');
-        })->setName('getPlaylist');
+        })->setName('getPlaylistDetails');
     });
     $group->group('/app', function (RouteCollectorProxy $group) use ($app) {
         $group->get('/playlists', function (Request $request, Response $response, $args) use ($app) {
