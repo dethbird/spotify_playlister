@@ -7,14 +7,14 @@ import LikeButton from '../components/LikeButton';
 function CurrentlyPlaying() {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
-    const [playingitem, sePlayingItem] = useState([]);
+    const [playingItem, setplayingItem] = useState([]);
 
     useEffect(() => {
         axios.get("/api/v1/me/player/currently-playing")
           .then(
             (result) => {
                 setIsLoaded(true);
-                sePlayingItem(result.data);
+                setplayingItem(result.data);
             },
             (error) => {
                 setIsLoaded(true);
@@ -28,21 +28,21 @@ function CurrentlyPlaying() {
     } else if (!isLoaded) {
         return <Loader active />;
     } else {
-        if (playingitem) {
+        if (playingItem) {
             return (
                 <Segment>
                     <Item.Group>
                         <Item>
-                            <Item.Image src={ playingitem.item.album.images[1].url } size='medium' />
+                            <Item.Image src={ playingItem.item.album.images[1].url } size='medium' />
 
                             <Item.Content>
-                                <Item.Header>{ playingitem.item.name }</Item.Header>
+                                <Item.Header>{ playingItem.item.name }</Item.Header>
                                 <Item.Meta>
-                                    {`${playingitem.item.album.name}  (${playingitem.item.album.release_date})`}
+                                    {`${playingItem.item.album.name}  (${playingItem.item.album.release_date})`}
                                 </Item.Meta>
-                                <Item.Description>{ playingitem.item.artists[0].name }</Item.Description>
+                                <Item.Description>{ playingItem.item.artists[0].name }</Item.Description>
                                 <Item.Extra>
-                                    <LikeButton trackId={ playingitem.item.id } />
+                                    <LikeButton trackId={ playingItem.item.id } />
                                     <Button.Group>
                                         <Button basic color='green' icon='plus circle' title='Add to Selected Playlists' />
                                         <Button basic color='grey' icon='times circle' title='Remove from Selected Playlists' />

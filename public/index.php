@@ -146,9 +146,9 @@ $app->get('/', function (Request $request, Response $response, $args) use ($spot
 $app->group('/api/v1', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
     $group->group('/me', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
         $group->get('/playlists', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
-            $response->getBody()->write(json_encode($spotifyApi->getUserPlaylists($_SESSION['SPOTIFY_USER_ID'], [
-                'limit' => 50,
-                'offset' => $_GET['offset'] || 0
+            $response->getBody()->write(json_encode($spotifyApi->getMyPlaylists([
+                'limit' => (int)$_GET['limit'],
+                'offset' => (int)$_GET['offset']
             ])));
             return $response->withHeader('Content-type', 'application/json');
         })->setName('getPlaylists');
