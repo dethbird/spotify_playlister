@@ -176,11 +176,28 @@ $app->group('/api', function (RouteCollectorProxy $group) use ($spotifyApi, $app
                 })->setName('trackIsLiked');
             });
         });
+        
+        $group->get('/playlists/{playlistId}', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
+            $response->getBody()->write(
+                json_encode(
+                    $spotifyApi->getPlaylist($args['playlistId'], ['fields' => [
+                        'name',
+                        'id',
+                        'description',
+                        'owner',
+                        'tracks(total)',
+                        'images',
+                        'external_urls(spotify)'
+                    ]])
+                )
+            );
+            return $response->withHeader('Content-type', 'application/json');
+        })->setName('getPlaylist');
     });
     $group->group('/app', function (RouteCollectorProxy $group) use ($app) {
         $group->get('/playlists', function (Request $request, Response $response, $args) use ($app) {
-            $playlists = R::find(
-                'playlist', ' user_id = ?', [ $_SESSION['USER_ID'] ] );
+            $playlists = array_values(R::find(
+                'playlist', ' user_id = ?', [ $_SESSION['USER_ID'] ] ));
             $response->getBody()->write(json_encode($playlists));
             return $response->withHeader('Content-type', 'application/json');
         })->setName('userPlaylists');

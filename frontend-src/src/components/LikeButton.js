@@ -67,9 +67,6 @@ function LikeButton(props) {
                 />
             );
         }
-
-        return <div>Nothing's playing</div>
-        
     }
 }
   
