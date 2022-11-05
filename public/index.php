@@ -30,6 +30,9 @@ use Symfony\Component\Yaml\Yaml;
 $config = Yaml::parseFile(APPLICATION_PATH . 'config.yml');
 
 # intialize db connector
+R::ext('xdispense', function($type){ 
+    return R::getRedBean()->dispense($type); 
+});
 R::setup( 'mysql:host='.$config['mysql']['host'].';dbname='.$config['mysql']['database'],
     $config['mysql']['username'], $config['mysql']['password'] );
 R::freeze( true );
@@ -45,7 +48,6 @@ if (isset($_SESSION['SPOTIFY_ACCESS_TOKEN'])) {
     $spotifyApi->setAccessToken($_SESSION['SPOTIFY_ACCESS_TOKEN']);
 }
 
-// var_dump('https://'.$_SERVER['HTTP_HOST'].'/callback'); die();
 # create app
 $app = AppFactory::create();
 $twig = Twig::create('../views',
@@ -184,6 +186,23 @@ $app->group('/api', function (RouteCollectorProxy $group) use ($spotifyApi, $app
             $response->getBody()->write(json_encode($playlists));
             return $response->withHeader('Content-type', 'application/json');
         })->setName('userPlaylists');
+        $group->put('/playlist', function (Request $request, Response $response, $args) use ($app) {
+            $payload = json_decode($request->getBody()->getContents());
+            $playlist = null;
+            $playlists = R::find(
+                'playlist', ' spotify_playlist_id = ?', [ $payload->playlistId ] );
+            if (count($playlists)>0) {
+                $playlist = $playlists[1];
+            } else {
+                $user_playlist = R::dispense( 'playlist' );
+                $user_playlist->spotify_playlist_id = $payload->playlistId;
+                $user_playlist->user_id = $_SESSION['USER_ID'];
+                $new_playlist_id = R::store( $user_playlist );
+                $playlist = R::load('playlist', $new_playlist_id);
+            }
+            $response->getBody()->write(json_encode($playlist));
+            return $response->withHeader('Content-type', 'application/json');
+        })->setName('addUserPlaylist');
     });
 });
 

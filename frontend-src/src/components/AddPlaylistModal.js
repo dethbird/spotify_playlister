@@ -30,6 +30,25 @@ function AddPlaylistModal() {
           )
     }
 
+    const onSelectPlaylist = (playlistId) => {
+        setIsLoaded(false);
+        axios.put('/api/app/playlist', {
+            playlistId: playlistId
+        })
+        .then(
+            (result) => {
+                setIsLoaded(true);
+                setOpen(false);
+                // reload the playlist selection list
+            },
+            (error) => {
+                setIsLoaded(true);
+                setError(error);
+                setOpen(false);
+            }
+        )
+    }
+
     const renderPage = () => {
         if (error) {
             return <div>Error: {error.message}</div>;
@@ -38,7 +57,10 @@ function AddPlaylistModal() {
         } else {
             if (playlistPage) {
                 return (
-                    <AddPlaylistModalPage page={ playlistPage }/>
+                    <AddPlaylistModalPage 
+                        page={ playlistPage }
+                        onSelectPlaylist={ onSelectPlaylist }
+                    />
                 );
             }
         }

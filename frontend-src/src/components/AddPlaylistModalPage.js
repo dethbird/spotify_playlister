@@ -14,7 +14,13 @@ function AddPlaylistModalPage(props) {
                     </Item.Meta>
                     <Item.Extra>
                         <Label><Icon name='music' />{ playlist.tracks.total } track(s)</Label>
-                        <Button color='green' floated='right'>Select <Icon name='chevron right' /></Button>
+                        <Button 
+                            color='green'
+                            floated='right'
+                            onClick={() => { props.onSelectPlaylist(playlist.id) }}
+                        >
+                            Select <Icon name='chevron right' />
+                        </Button>
                     </Item.Extra>
                 </Item.Content>
             </Item>
