@@ -28,6 +28,15 @@ function PlaylistSelection() {
         )
     }
 
+    const onRemovePlaylist = () => {
+        fetchPlaylists();
+    }
+
+    const onAddPlaylist = () => {
+        fetchPlaylists();
+    }
+    
+
     const renderPlaylists = () => {
         if (error) {
             return <div>Error: {error.message}</div>;
@@ -36,7 +45,11 @@ function PlaylistSelection() {
         } else {
             if (playlists.length) {
                 return playlists.map(playlist => (
-                    <PlaylistSelectionItem spotifyPlaylistId={ playlist.spotify_playlist_id } />
+                    <PlaylistSelectionItem 
+                        spotifyPlaylistId={ playlist.spotify_playlist_id }
+                        id={ playlist.id }
+                        onRemovePlaylist= { onRemovePlaylist }
+                    />
                 ));
             }
         }
@@ -45,7 +58,7 @@ function PlaylistSelection() {
     return (
       <div className='playlist-selection'>
         <Button.Group>
-            <AddPlaylistModal />
+            <AddPlaylistModal onAddPlaylist={ onAddPlaylist } />
             <Button basic color='grey' icon='check square' title='Select All' />
             <Button basic color='grey' icon='check square outline' title='Select None' />
             <Button basic color='grey' icon='exchange' title='Invert Selection' />

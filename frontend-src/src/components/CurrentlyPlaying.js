@@ -38,7 +38,7 @@ function CurrentlyPlaying() {
                             <Item.Content>
                                 <Item.Header>{ playingItem.item.name }</Item.Header>
                                 <Item.Meta>
-                                    {`${playingItem.item.album.name}  (${playingItem.item.album.release_date})`}
+                                    {`${playingItem.item.album.name}<br />(${playingItem.item.album.release_date})`}
                                 </Item.Meta>
                                 <Item.Description>{ playingItem.item.artists[0].name }</Item.Description>
                                 <Item.Extra>

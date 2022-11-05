@@ -218,6 +218,12 @@ $app->group('/api', function (RouteCollectorProxy $group) use ($spotifyApi, $app
             $response->getBody()->write(json_encode($playlist));
             return $response->withHeader('Content-type', 'application/json');
         })->setName('addUserPlaylist');
+        $group->delete('/playlist/{id}', function (Request $request, Response $response, $args) use ($app) {
+            $playlist = R::load( 'playlist', $args['id'] );
+            R::trash( $playlist );
+            $response->getBody()->write(json_encode($playlist));
+            return $response->withHeader('Content-type', 'application/json');
+        })->setName('addUserPlaylist');
     });
 });
 

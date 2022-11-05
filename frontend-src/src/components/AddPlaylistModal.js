@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Button, Divider, Loader, Modal, Pagination } from 'semantic-ui-react';
 import AddPlaylistModalPage from './AddPlaylistModalPage';
 
-function AddPlaylistModal() {
+function AddPlaylistModal(props) {
     const [open, setOpen] = React.useState(false);
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -39,7 +39,7 @@ function AddPlaylistModal() {
             (result) => {
                 setIsLoaded(true);
                 setOpen(false);
-                // reload the playlist selection list
+                props.onAddPlaylist();
             },
             (error) => {
                 setIsLoaded(true);

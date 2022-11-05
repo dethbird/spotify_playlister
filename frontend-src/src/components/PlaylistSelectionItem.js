@@ -12,11 +12,27 @@ function PlaylistSelectionItem(props) {
     }, []);
 
     const fetchPlaylist = () => {
+        setIsLoaded(false);
         axios.get(`/api/v1/playlists/${props.spotifyPlaylistId}`)
         .then(
             (result) => {
                 setIsLoaded(true);
                 setPlaylist(result.data);
+            },
+            (error) => {
+                setIsLoaded(true);
+                setError(error);
+            }
+        )
+    }
+
+    const removePlaylist = () => {
+        setIsLoaded(false);
+        axios.delete(`/api/app/playlist/${props.id}`)
+        .then(
+            () => {
+                setIsLoaded(true);
+                props.onRemovePlaylist()
             },
             (error) => {
                 setIsLoaded(true);
@@ -53,7 +69,7 @@ function PlaylistSelectionItem(props) {
                             size='small'
                             basic
                             color='red'
-                            onClick={() => { console.log(playlist.id) }}
+                            onClick={ removePlaylist }
                         ><Icon name='times circle' /></Button>
                     </Segment>
                 </Item>
