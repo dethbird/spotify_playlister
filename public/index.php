@@ -57,6 +57,7 @@ $app->add(TwigMiddleware::create($app, $twig));
 function performLogout() {
     unset($_SESSION['SPOTIFY_ACCESS_TOKEN']);
     unset($_SESSION['SPOTIFY_REFRESH_TOKEN']);
+    unset($_SESSION['SPOTIFY_USER_ID']);
 }
 
 # ROUTES
@@ -84,6 +85,7 @@ $app->get('/callback', function (Request $request, Response $response, $args) us
     # create user if not in db
     $spotifyApi->setAccessToken($_SESSION['SPOTIFY_ACCESS_TOKEN']);
     $me = $spotifyApi->me();
+    $_SESSION['SPOTIFY_USER_ID'] = $me->id;
 
     $users = R::find(
         'user', ' spotify_user_id = ?', [ $me->id ] );
@@ -143,6 +145,13 @@ $app->get('/', function (Request $request, Response $response, $args) use ($spot
 
 $app->group('/api/v1', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
     $group->group('/me', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
+        $group->get('/playlists', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
+            $response->getBody()->write(json_encode($spotifyApi->getUserPlaylists($_SESSION['SPOTIFY_USER_ID'], [
+                'limit' => 50,
+                'offset' => $_GET['offset'] || 0
+            ])));
+            return $response->withHeader('Content-type', 'application/json');
+        })->setName('getPlaylists');
         $group->group('/player', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
             $group->get('/currently-playing', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
                 $response->getBody()->write(json_encode($spotifyApi->getMyCurrentPlaybackInfo()));
