@@ -30,9 +30,6 @@ use Symfony\Component\Yaml\Yaml;
 $config = Yaml::parseFile(APPLICATION_PATH . 'config.yml');
 
 # intialize db connector
-R::ext('xdispense', function($type){ 
-    return R::getRedBean()->dispense($type); 
-});
 R::setup( 'mysql:host='.$config['mysql']['host'].';dbname='.$config['mysql']['database'],
     $config['mysql']['username'], $config['mysql']['password'] );
 R::freeze( true );
@@ -89,15 +86,15 @@ $app->get('/callback', function (Request $request, Response $response, $args) us
     $me = $spotifyApi->me();
     $_SESSION['SPOTIFY_USER_ID'] = $me->id;
 
-    $users = R::find(
-        'user', ' spotify_user_id = ?', [ $me->id ] );
-
+    $users = array_values(R::find(
+        'user', ' spotify_user_id = ?', [ $me->id ] ));
+    
     if (count($users) == 0){
         $user = R::dispense( 'user' );
         $user->spotify_user_id = $me->id;
         $_SESSION['USER_ID'] = R::store( $user );
     } else {
-        $_SESSION['USER_ID'] = $users[1]->id;
+        $_SESSION['USER_ID'] = $users[0]->id;
     }
 
     # redirect to home
@@ -131,9 +128,10 @@ $app->get('/', function (Request $request, Response $response, $args) use ($spot
     } else {
         try {
             $spotify_user = $spotifyApi->me();
-            $users = R::find(
-                'user', ' spotify_user_id = ?', [ $spotify_user->id ] );
-            $user = $users[1];
+            $users = array_values(R::find(
+                'user', ' spotify_user_id = ? LIMIT 1', [ $spotify_user->id ] ));
+            $user = $users[0];
+            
         } catch (Exception $e) {
             performLogout();
             header('Location: /');
@@ -182,17 +180,17 @@ $app->group('/api', function (RouteCollectorProxy $group) use ($spotifyApi, $app
     $group->group('/app', function (RouteCollectorProxy $group) use ($app) {
         $group->get('/playlists', function (Request $request, Response $response, $args) use ($app) {
             $playlists = R::find(
-                'user_playlist', ' user_id = ?', [ $_SESSION['USER_ID'] ] );
+                'playlist', ' user_id = ?', [ $_SESSION['USER_ID'] ] );
             $response->getBody()->write(json_encode($playlists));
             return $response->withHeader('Content-type', 'application/json');
         })->setName('userPlaylists');
         $group->put('/playlist', function (Request $request, Response $response, $args) use ($app) {
             $payload = json_decode($request->getBody()->getContents());
             $playlist = null;
-            $playlists = R::find(
-                'playlist', ' spotify_playlist_id = ?', [ $payload->playlistId ] );
+            $playlists = array_values(R::find(
+                'playlist', ' spotify_playlist_id = ? LIMIT 1', [ $payload->playlistId ] ));
             if (count($playlists)>0) {
-                $playlist = $playlists[1];
+                $playlist = $playlists[0];
             } else {
                 $user_playlist = R::dispense( 'playlist' );
                 $user_playlist->spotify_playlist_id = $payload->playlistId;
