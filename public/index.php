@@ -201,6 +201,26 @@ $app->group('/api', function (RouteCollectorProxy $group) use ($spotifyApi, $app
             $response->getBody()->write(json_encode($playlists));
             return $response->withHeader('Content-type', 'application/json');
         })->setName('userPlaylists');
+        $group->group('/playlists', function (RouteCollectorProxy $group) use ($app) {
+            $group->patch('/active', function (Request $request, Response $response, $args) use ($app) {
+                $payload = json_decode($request->getBody()->getContents());
+                $playlists = R::findForUpdate('playlist', ' user_id = ?', [ $_SESSION['USER_ID'] ]);
+                foreach ($playlists as $playlist) {
+                    $playlist->active = $payload->active;
+                    R::store($playlist);
+                }
+                return $response->withHeader('Content-type', 'application/json');
+            })->setName('userPlaylistsActive');
+            $group->patch('/invertactive', function (Request $request, Response $response, $args) use ($app) {
+                $payload = json_decode($request->getBody()->getContents());
+                $playlists = R::findForUpdate('playlist', ' user_id = ?', [ $_SESSION['USER_ID'] ]);
+                foreach ($playlists as $playlist) {
+                    $playlist->active = $playlist->active == 'Y' ? 'N' : 'Y';
+                    R::store($playlist);
+                }
+                return $response->withHeader('Content-type', 'application/json');
+            })->setName('userPlaylistsInvertActive');
+        });
         $group->put('/playlist', function (Request $request, Response $response, $args) use ($app) {
             $payload = json_decode($request->getBody()->getContents());
             $playlist = null;
@@ -232,7 +252,7 @@ $app->group('/api', function (RouteCollectorProxy $group) use ($spotifyApi, $app
                 R::store($playlist);
                 $response->getBody()->write(json_encode($playlist));
                 return $response->withHeader('Content-type', 'application/json');
-            })->setName('userPlaylists');
+            })->setName('userPlaylistActive');
         });
     });
 });

@@ -28,6 +28,34 @@ function PlaylistSelection() {
         )
     }
 
+    const setActiveAll = (active) => {
+        axios.patch(`/api/app/playlists/active`, {
+            'active' : active
+        })
+        .then(
+            () => {
+                setIsLoaded(false);
+                fetchPlaylists();
+            },
+            (error) => {
+                setError(error);
+            }
+        )
+    }
+
+    const setActiveInverse = () => {
+        axios.patch(`/api/app/playlists/invertactive`)
+        .then(
+            () => {
+                setIsLoaded(false);
+                fetchPlaylists();
+            },
+            (error) => {
+                setError(error);
+            }
+        )
+    }
+
     const onRemovePlaylist = () => {
         fetchPlaylists();
     }
@@ -35,7 +63,6 @@ function PlaylistSelection() {
     const onAddPlaylist = () => {
         fetchPlaylists();
     }
-    
 
     const renderPlaylists = () => {
         if (error) {
@@ -60,9 +87,9 @@ function PlaylistSelection() {
       <div className='playlist-selection'>
         <Button.Group>
             <AddPlaylistModal onAddPlaylist={ onAddPlaylist } />
-            <Button basic color='grey' icon='check square' title='Select All' />
-            <Button basic color='grey' icon='check square outline' title='Select None' />
-            <Button basic color='grey' icon='exchange' title='Invert Selection' />
+            <Button basic color='grey' icon='check square' title='Select All' onClick={ () => { setActiveAll('Y')}} />
+            <Button basic color='grey' icon='check square outline' title='Select None' onClick={ () => { setActiveAll('N')}} />
+            <Button basic color='grey' icon='exchange' title='Invert Selection' onClick={ setActiveInverse } />
         </Button.Group>
         <Item.Group divided link>{ renderPlaylists() }</Item.Group>
       </div>
