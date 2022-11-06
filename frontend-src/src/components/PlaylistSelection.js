@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useState, useEffect } from "react";
-import { Button, Item, Loader } from 'semantic-ui-react';
+import { Button, Icon, Item, Loader } from 'semantic-ui-react';
 import AddPlaylistModal from './AddPlaylistModal';
 import PlaylistSelectionItem from './PlaylistSelectionItem';
 
@@ -79,6 +79,10 @@ function PlaylistSelection() {
                         onRemovePlaylist= { onRemovePlaylist }
                     />
                 ));
+            } else {
+                return (
+                    <div><Icon name='long arrow alternate up' /> Begin by adding Spotify playlists you would like to modify using the 'plus' button above.</div>
+                )
             }
         }
     }
