@@ -184,8 +184,8 @@ $app->group('/api', function (RouteCollectorProxy $group) use ($spotifyApi, $app
                         'name',
                         'id',
                         'description',
-                        'owner',
-                        'tracks(total)',
+                        'owner(display_name, external_urls(spotify))',
+                        'tracks(total,items(track.id))',
                         'images',
                         'external_urls(spotify)'
                     ]])

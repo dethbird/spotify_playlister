@@ -4,10 +4,10 @@ import { Button, Item, Loader, Segment } from 'semantic-ui-react'
 
 import LikeButton from '../components/LikeButton';
 
-function CurrentlyPlaying() {
+function CurrentlyPlaying(props) {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
-    const [playingItem, setPlayingItem] = useState([]);
+    const playingItem = props.playingItem;
 
     useEffect(() => {
         getCurrentlyPlaying();
@@ -19,7 +19,7 @@ function CurrentlyPlaying() {
           .then(
             (result) => {
                 setIsLoaded(true);
-                setPlayingItem(result.data);
+                props.setPlayingItem(result.data);
             },
             (error) => {
                 setIsLoaded(true);
