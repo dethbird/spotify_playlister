@@ -6,10 +6,27 @@ import PlaylistSelectionItem from './PlaylistSelectionItem';
 
 
 function PlaylistSelection(props) {
+    const [playlists, setPlaylists] = useState([]);
+    const [error, setError] = useState(null);
+    const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
-        props.fetchPlaylists();
+        fetchPlaylists();
     }, []);
+
+    const fetchPlaylists = () => {
+      axios.get('/api/app/playlists')
+      .then(
+          (result) => {
+                setIsLoaded(true);
+                setPlaylists(result.data);
+          },
+          (playlistsError) => {
+                setIsLoaded(true);
+                setError(playlistsError);
+          }
+      )
+    }
 
     const setActiveAll = (active) => {
         axios.patch(`/api/app/playlists/active`, {
@@ -17,11 +34,11 @@ function PlaylistSelection(props) {
         })
         .then(
             () => {
-                props.setIsLoaded(false);
-                props.fetchPlaylists();
+                setIsLoaded(false);
+                fetchPlaylists();
             },
             (error) => {
-                props.setError(error);
+                setError(error);
             }
         )
     }
@@ -30,33 +47,33 @@ function PlaylistSelection(props) {
         axios.patch(`/api/app/playlists/invertactive`)
         .then(
             () => {
-                props.setIsLoaded(false);
-                props.fetchPlaylists();
+                setIsLoaded(false);
+                fetchPlaylists();
             },
             (error) => {
-                props.setError(error);
+                setError(error);
             }
         )
     }
 
     const onRemovePlaylist = () => {
-        props.setIsLoaded(false);
-        props.fetchPlaylists();
+        setIsLoaded(false);
+        fetchPlaylists();
     }
 
     const onAddPlaylist = () => {
-        props.setIsLoaded(false);
-        props.fetchPlaylists();
+        setIsLoaded(false);
+        fetchPlaylists();
     }
 
     const renderPlaylists = () => {
-        if (props.error) {
+        if (error) {
             return <div>Error: {props.error.message}</div>;
-        } else if (!props.isLoaded) {
+        } else if (!isLoaded) {
             return <Loader active />;
         } else {
-            if (props.playlists.length) {
-                return props.playlists.map(playlist => (
+            if (playlists.length) {
+                return playlists.map(playlist => (
                     <PlaylistSelectionItem 
                         spotifyPlaylistId={ playlist.spotify_playlist_id }
                         id={ playlist.id }

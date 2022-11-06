@@ -7,7 +7,7 @@ import LikeButton from '../components/LikeButton';
 function CurrentlyPlaying(props) {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
-    const playingItem = props.playingItem;
+    const [playingItem, setPlayingItem] = useState(null);
 
     useEffect(() => {
         getCurrentlyPlaying();
@@ -19,7 +19,7 @@ function CurrentlyPlaying(props) {
           .then(
             (result) => {
                 setIsLoaded(true);
-                props.setPlayingItem(result.data);
+                setPlayingItem(result.data);
             },
             (error) => {
                 setIsLoaded(true);
