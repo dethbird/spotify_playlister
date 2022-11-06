@@ -6,6 +6,8 @@ function PlaylistSelectionItem(props) {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
     const [playlist, setPlaylist] = useState(null);
+    const [checked, setChecked] = useState(props.active == 'Y' ? true : false);
+    
 
     useEffect(() => {
         fetchPlaylist();
@@ -41,6 +43,20 @@ function PlaylistSelectionItem(props) {
         )
     }
 
+    const onToggleActive = (active) => {
+        axios.patch(`/api/app/playlist/${props.id}/active`, {
+            'active' : active ? 'Y' : 'N'
+        })
+        .then(
+            () => {
+                setChecked(active);
+            },
+            (error) => {
+                setError(error);
+            }
+        )
+    }
+
     if (error) {
         return <div>Error: {error.message}</div>;
     } else if (!isLoaded) {
@@ -61,7 +77,11 @@ function PlaylistSelectionItem(props) {
                         </Item.Extra>
                     </Item.Content>
                     <Segment basic floated='right' textAlign='right'>
-                        <Checkbox toggle />
+                        <Checkbox 
+                            toggle
+                            checked={ checked }
+                            onChange={ (event,data) => { onToggleActive(data.checked); } }
+                        />
                         <br />
                         <Button
                             title='Remove this Playlist'

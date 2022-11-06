@@ -48,6 +48,7 @@ function PlaylistSelection() {
                     <PlaylistSelectionItem 
                         spotifyPlaylistId={ playlist.spotify_playlist_id }
                         id={ playlist.id }
+                        active={ playlist.active }
                         onRemovePlaylist= { onRemovePlaylist }
                     />
                 ));

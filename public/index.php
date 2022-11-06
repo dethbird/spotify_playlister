@@ -224,6 +224,16 @@ $app->group('/api', function (RouteCollectorProxy $group) use ($spotifyApi, $app
             $response->getBody()->write(json_encode($playlist));
             return $response->withHeader('Content-type', 'application/json');
         })->setName('addUserPlaylist');
+        $group->group('/playlist/{id}', function (RouteCollectorProxy $group) use ($app) {
+            $group->patch('/active', function (Request $request, Response $response, $args) use ($app) {
+                $payload = json_decode($request->getBody()->getContents());
+                $playlist = R::loadForUpdate('playlist', $args['id']);
+                $playlist->active = $payload->active;
+                R::store($playlist);
+                $response->getBody()->write(json_encode($playlist));
+                return $response->withHeader('Content-type', 'application/json');
+            })->setName('userPlaylists');
+        });
     });
 });
 
