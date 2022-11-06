@@ -6,27 +6,27 @@ import PlaylistSelectionItem from './PlaylistSelectionItem';
 
 
 function PlaylistSelection(props) {
-    const [playlists, setPlaylists] = useState([]);
-    const [error, setError] = useState(null);
-    const [isLoaded, setIsLoaded] = useState(false);
+    // const [playlists, setPlaylists] = useState([]);
+    // const [error, setError] = useState(null);
+    // const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
-        fetchPlaylists();
+        props.fetchPlaylists();
     }, []);
 
-    const fetchPlaylists = () => {
-      axios.get('/api/app/playlists')
-      .then(
-          (result) => {
-                setIsLoaded(true);
-                setPlaylists(result.data);
-          },
-          (playlistsError) => {
-                setIsLoaded(true);
-                setError(playlistsError);
-          }
-      )
-    }
+    // const fetchPlaylists = () => {
+    //   axios.get('/api/app/playlists')
+    //   .then(
+    //       (result) => {
+    //             setIsLoaded(true);
+    //             setPlaylists(result.data);
+    //       },
+    //       (playlistsError) => {
+    //             setIsLoaded(true);
+    //             setError(playlistsError);
+    //       }
+    //   )
+    // }
 
     const setActiveAll = (active) => {
         axios.patch(`/api/app/playlists/active`, {
@@ -34,11 +34,11 @@ function PlaylistSelection(props) {
         })
         .then(
             () => {
-                setIsLoaded(false);
-                fetchPlaylists();
+                props.setIsLoaded(false);
+                props.fetchPlaylists();
             },
             (error) => {
-                setError(error);
+                props.setError(error);
             }
         )
     }
@@ -47,33 +47,33 @@ function PlaylistSelection(props) {
         axios.patch(`/api/app/playlists/invertactive`)
         .then(
             () => {
-                setIsLoaded(false);
-                fetchPlaylists();
+                props.setIsLoaded(false);
+                props.fetchPlaylists();
             },
             (error) => {
-                setError(error);
+                props.setError(error);
             }
         )
     }
 
     const onRemovePlaylist = () => {
-        setIsLoaded(false);
-        fetchPlaylists();
+        props.setIsLoaded(false);
+        props.fetchPlaylists();
     }
 
     const onAddPlaylist = () => {
-        setIsLoaded(false);
-        fetchPlaylists();
+        props.setIsLoaded(false);
+        props.fetchPlaylists();
     }
 
     const renderPlaylists = () => {
-        if (error) {
+        if (props.error) {
             return <div>Error: {props.error.message}</div>;
-        } else if (!isLoaded) {
+        } else if (!props.isLoaded) {
             return <Loader active />;
         } else {
-            if (playlists.length) {
-                return playlists.map(playlist => (
+            if (props.playlists.length) {
+                return props.playlists.map(playlist => (
                     <PlaylistSelectionItem 
                         spotifyPlaylistId={ playlist.spotify_playlist_id }
                         id={ playlist.id }

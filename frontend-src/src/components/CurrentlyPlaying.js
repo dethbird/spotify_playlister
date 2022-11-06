@@ -14,12 +14,45 @@ function CurrentlyPlaying(props) {
     }, [])
 
     const getCurrentlyPlaying = () => {
-        setIsLoaded(false);
         axios.get("/api/v1/me/player/currently-playing")
           .then(
             (result) => {
                 setIsLoaded(true);
                 setPlayingItem(result.data);
+            },
+            (error) => {
+                setIsLoaded(true);
+                setError(error);
+            }
+          )
+    }
+
+    const addToPlaylists = () => {
+        props.setPlaylistsLoaded(false);
+        axios.put("/api/app/playlists/addtrack", {
+            trackUri: playingItem.item.uri
+        })
+          .then(
+            (result) => {
+                setIsLoaded(true);
+                props.fetchPlaylists();
+            },
+            (error) => {
+                setIsLoaded(true);
+                setError(error);
+            }
+          )
+    }
+
+    const removeFromPlaylists = () => {
+        props.setPlaylistsLoaded(false);
+        axios.patch("/api/app/playlists/removetrack", {
+            trackUri: playingItem.item.uri
+        })
+          .then(
+            (result) => {
+                setIsLoaded(true);
+                props.fetchPlaylists();
             },
             (error) => {
                 setIsLoaded(true);
@@ -49,8 +82,8 @@ function CurrentlyPlaying(props) {
                                 <Item.Extra>
                                     <LikeButton trackId={ playingItem.item.id } />
                                     <Button.Group>
-                                        <Button basic color='green' icon='plus circle' title='Add to Selected Playlists' />
-                                        <Button basic color='red' icon='times circle' title='Remove from Selected Playlists' />
+                                        <Button basic color='green' icon='plus circle' title='Add to Selected Playlists' onClick={ addToPlaylists } />
+                                        <Button basic color='red' icon='times circle' title='Remove from Selected Playlists' onClick={ removeFromPlaylists } />
                                         <Button basic color='blue' icon='sync' title="Show Me What's Playing" onClick={ getCurrentlyPlaying }/>
                                     </Button.Group>
                                 </Item.Extra>
