@@ -34,11 +34,11 @@ function CurrentlyPlaying() {
                     <Item.Group>
                         <Item>
                             <Item.Image src={ playingItem.item.album.images[1].url } size='medium' />
-
                             <Item.Content>
                                 <Item.Header>{ playingItem.item.name }</Item.Header>
+                                <Item.Description>{ playingItem.item.album.name }</Item.Description>
                                 <Item.Meta>
-                                    {`${playingItem.item.album.name}<br />(${playingItem.item.album.release_date})`}
+                                    ({ playingItem.item.album.release_date})
                                 </Item.Meta>
                                 <Item.Description>{ playingItem.item.artists[0].name }</Item.Description>
                                 <Item.Extra>
