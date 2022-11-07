@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useState, useEffect } from "react";
+import { toast } from 'react-toastify';
 import { Button, Item, Loader, Segment } from 'semantic-ui-react'
 
 import LikeButton from '../components/LikeButton';
@@ -28,7 +29,7 @@ function CurrentlyPlaying(props) {
     }
 
     const addToPlaylists = () => {
-        props.setPlaylistsLoaded(false);
+        // props.setPlaylistsLoaded(false);
         axios.put("/api/app/playlists/addtrack", {
             trackUri: playingItem.item.uri
         })
@@ -36,6 +37,7 @@ function CurrentlyPlaying(props) {
             (result) => {
                 setIsLoaded(true);
                 props.fetchPlaylists();
+                toast.success('Track added')
             },
             (error) => {
                 setIsLoaded(true);
@@ -45,7 +47,7 @@ function CurrentlyPlaying(props) {
     }
 
     const removeFromPlaylists = () => {
-        props.setPlaylistsLoaded(false);
+        // props.setPlaylistsLoaded(false);
         axios.patch("/api/app/playlists/removetrack", {
             trackUri: playingItem.item.uri
         })
@@ -53,6 +55,7 @@ function CurrentlyPlaying(props) {
             (result) => {
                 setIsLoaded(true);
                 props.fetchPlaylists();
+                toast.error('Track removed')
             },
             (error) => {
                 setIsLoaded(true);

@@ -1,4 +1,7 @@
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import './App.css';
 import Index from './pages/Index'
 import Login from './pages/Login'
@@ -16,6 +19,7 @@ function App() {
   return (
     <div className='App'>
         { authRender() }
+        <ToastContainer autoClose={ 1500 } closeOnClick={ true } />
     </div>
   );
 }
