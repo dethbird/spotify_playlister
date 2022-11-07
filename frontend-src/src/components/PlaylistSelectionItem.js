@@ -5,7 +5,7 @@ import { Button, Checkbox, Icon, Item, Label, Loader, Segment } from 'semantic-u
 function PlaylistSelectionItem(props) {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
-    const [playlist, setPlaylist] = useState(null);
+    const [spotifyPlaylist, setSpotifyPlaylist] = useState(null);
     const [checked, setChecked] = useState(props.active == 'Y' ? true : false);
     
 
@@ -19,7 +19,7 @@ function PlaylistSelectionItem(props) {
         .then(
             (result) => {
                 setIsLoaded(true);
-                setPlaylist(result.data);
+                setSpotifyPlaylist(result.data);
             },
             (error) => {
                 setIsLoaded(true);
@@ -62,18 +62,18 @@ function PlaylistSelectionItem(props) {
     } else if (!isLoaded) {
         return <Loader active />;
     } else {
-        if (playlist) {
+        if (spotifyPlaylist) {
             return (
-                <Item key={ playlist.id }>
-                    <Item.Image size='tiny' src={ playlist.images[0].url } />
+                <Item key={ spotifyPlaylist.id }>
+                    <Item.Image size='tiny' src={ spotifyPlaylist.images[0].url } />
                     <Item.Content>
-                        <Item.Header as='a' href={playlist.external_urls.spotify} target='_blank'>{ playlist.name }</Item.Header>
-                        <Item.Description>{ playlist.description }</Item.Description>
+                        <Item.Header as='a' href={spotifyPlaylist.external_urls.spotify} target='_blank'>{ spotifyPlaylist.name }</Item.Header>
+                        <Item.Description>{ spotifyPlaylist.description }</Item.Description>
                         <Item.Meta>
-                            by { playlist.owner.display_name}
+                            by { spotifyPlaylist.owner.display_name}
                         </Item.Meta>
                         <Item.Extra>
-                            <Label><Icon name='music' />{ playlist.tracks.total } track(s)</Label>
+                            <Label><Icon name='music' />{ spotifyPlaylist.tracks.total } track(s)</Label>
                         </Item.Extra>
                     </Item.Content>
                     <Segment basic floated='right' textAlign='right'>
