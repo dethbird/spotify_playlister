@@ -1,8 +1,9 @@
 import axios from 'axios';
 import React, { useState, useEffect } from "react";
 import { toast } from 'react-toastify';
-import { Button, Item, Loader, Segment } from 'semantic-ui-react'
+import { Button, Icon, Item, Loader, Segment } from 'semantic-ui-react'
 
+import CurrentlyPlayingPlaybackControls from './CurrentlyPlayingPlaybackControls';
 import LikeButton from '../components/LikeButton';
 
 function CurrentlyPlaying(props) {
@@ -16,52 +17,50 @@ function CurrentlyPlaying(props) {
 
     const getCurrentlyPlaying = () => {
         axios.get("/api/v1/me/player/currently-playing")
-          .then(
-            (result) => {
-                setIsLoaded(true);
-                setPlayingItem(result.data);
-            },
-            (error) => {
-                setIsLoaded(true);
-                setError(error);
-            }
-          )
+            .then(
+                (result) => {
+                    setIsLoaded(true);
+                    setPlayingItem(result.data);
+                },
+                (error) => {
+                    setIsLoaded(true);
+                    setError(error);
+                }
+            )
     }
 
     const addToPlaylists = () => {
-        // props.setPlaylistsLoaded(false);
         axios.put("/api/app/playlists/addtrack", {
             trackUri: playingItem.item.uri
         })
-          .then(
-            (result) => {
-                setIsLoaded(true);
-                props.fetchPlaylists();
-                toast.success('Track added')
-            },
-            (error) => {
-                setIsLoaded(true);
-                setError(error);
-            }
-          )
+            .then(
+                (result) => {
+                    setIsLoaded(true);
+                    props.fetchPlaylists();
+                    toast.success('Track added')
+                },
+                (error) => {
+                    setIsLoaded(true);
+                    setError(error);
+                }
+            )
     }
 
     const removeFromPlaylists = () => {
-        // props.setPlaylistsLoaded(false);
         axios.patch("/api/app/playlists/removetrack", {
             trackUri: playingItem.item.uri
         })
-          .then(
-            (result) => {
-                setIsLoaded(true);
-                props.fetchPlaylists();
-                toast.error('Track removed')
-            },
-            (error) => {
-                setIsLoaded(true);
-                setError(error);
-            }
-          )
+            .then(
+                (result) => {
+                    setIsLoaded(true);
+                    props.fetchPlaylists();
+                    toast.error('Track removed')
+                },
+                (error) => {
+                    setIsLoaded(true);
+                    setError(error);
+                }
+            )
     }
 
     if (error) {
@@ -90,6 +89,9 @@ function CurrentlyPlaying(props) {
                                         <Button basic color='blue' icon='sync' title="Show Me What's Playing" onClick={ getCurrentlyPlaying }/>
                                     </Button.Group>
                                 </Item.Extra>
+                                <Item.Extra>
+                                    <CurrentlyPlayingPlaybackControls getCurrentlyPlaying={ getCurrentlyPlaying }/>
+                                </Item.Extra>
                             </Item.Content>
                         </Item>
                     </Item.Group>
@@ -99,9 +101,9 @@ function CurrentlyPlaying(props) {
         }
 
         return <Segment textAlign='center' compact>
-                    Nothing's playing. Play something in Spotify then click the button below:<br />
-                    <Button basic color='blue' icon='sync' title="Show Me What's Playing" onClick={ getCurrentlyPlaying }/>
-                </Segment>
+            Nothing's playing. Play something in Spotify then click the button below:<br />
+            <Button basic color='blue' icon='sync' title="Show Me What's Playing" onClick={getCurrentlyPlaying} />
+        </Segment>
         
     }
 }

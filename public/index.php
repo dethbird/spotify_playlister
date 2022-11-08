@@ -160,6 +160,22 @@ $app->group('/api', function (RouteCollectorProxy $group) use ($spotifyApi, $app
                     $response->getBody()->write(json_encode($spotifyApi->getMyCurrentPlaybackInfo()));
                     return $response->withHeader('Content-type', 'application/json');
                 })->setName('currentlyPlaying');
+                $group->put('/pause', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
+                    $response->getBody()->write(json_encode($spotifyApi->pause()));
+                    return $response->withHeader('Content-type', 'application/json');
+                })->setName('pauseTrack');
+                $group->put('/play', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
+                    $response->getBody()->write(json_encode($spotifyApi->play()));
+                    return $response->withHeader('Content-type', 'application/json');
+                })->setName('playTrack');
+                $group->post('/previous', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
+                    $response->getBody()->write(json_encode($spotifyApi->previous()));
+                    return $response->withHeader('Content-type', 'application/json');
+                })->setName('previousTrack');
+                $group->post('/next', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
+                    $response->getBody()->write(json_encode($spotifyApi->next()));
+                    return $response->withHeader('Content-type', 'application/json');
+                })->setName('nextTrack');
             });
             $group->delete('/tracks', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
                 $response->getBody()->write(json_encode($spotifyApi->deleteMyTracks(explode(",", $_GET['ids']))));
@@ -194,17 +210,6 @@ $app->group('/api', function (RouteCollectorProxy $group) use ($spotifyApi, $app
             );
             return $response->withHeader('Content-type', 'application/json');
         })->setName('getPlaylistDetails');
-        // $group->group('/playlists/{playlistId}', function (RouteCollectorProxy $group) use ($app) {
-        //     $group->put('/tracks', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
-        //         $tracks = [
-        //             'tracks' => [
-        //                 ['uri' => 'spotify:track:']
-        //             ],
-        //         ];
-        //         $response->getBody()->write(json_encode($api->deletePlaylistTracks($args['playlistId'], $tracks, 'SNAPSHOT_ID'))));
-        //         return $response->withHeader('Content-type', 'application/json');
-        //     })->setName('addTrackToPlaylists');
-        // });
     });
     $group->group('/app', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
         $group->get('/playlists', function (Request $request, Response $response, $args) use ($app) {
