@@ -15,7 +15,7 @@ function PlaylistSelectionItem(props) {
 
     const fetchPlaylist = () => {
         setIsLoaded(false);
-        axios.get(`/api/v1/playlists/${props.spotifyPlaylistId}`)
+        axios.get(`/api/v1/playlists/${props.playlist.spotify_playlist_id}`)
         .then(
             (result) => {
                 setIsLoaded(true);
@@ -30,7 +30,7 @@ function PlaylistSelectionItem(props) {
 
     const removePlaylist = () => {
         setIsLoaded(false);
-        axios.delete(`/api/app/playlist/${props.id}`)
+        axios.delete(`/api/app/playlist/${props.playlist.id}`)
         .then(
             () => {
                 setIsLoaded(true);
@@ -44,7 +44,7 @@ function PlaylistSelectionItem(props) {
     }
 
     const onToggleActive = (active) => {
-        axios.patch(`/api/app/playlist/${props.id}/active`, {
+        axios.patch(`/api/app/playlist/${props.playlist.id}/active`, {
             'active' : active ? 'Y' : 'N'
         })
         .then(

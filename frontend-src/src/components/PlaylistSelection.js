@@ -6,27 +6,10 @@ import PlaylistSelectionItem from './PlaylistSelectionItem';
 
 
 function PlaylistSelection(props) {
-    // const [playlists, setPlaylists] = useState([]);
-    // const [error, setError] = useState(null);
-    // const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
         props.fetchPlaylists();
     }, []);
-
-    // const fetchPlaylists = () => {
-    //   axios.get('/api/app/playlists')
-    //   .then(
-    //       (result) => {
-    //             setIsLoaded(true);
-    //             setPlaylists(result.data);
-    //       },
-    //       (playlistsError) => {
-    //             setIsLoaded(true);
-    //             setError(playlistsError);
-    //       }
-    //   )
-    // }
 
     const setActiveAll = (active) => {
         axios.patch(`/api/app/playlists/active`, {
@@ -75,8 +58,7 @@ function PlaylistSelection(props) {
             if (props.playlists.length) {
                 return props.playlists.map(playlist => (
                     <PlaylistSelectionItem 
-                        spotifyPlaylistId={ playlist.spotify_playlist_id }
-                        id={ playlist.id }
+                        playlist={ playlist }
                         active={ playlist.active }
                         onRemovePlaylist= { onRemovePlaylist }
                     />

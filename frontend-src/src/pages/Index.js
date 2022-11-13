@@ -13,16 +13,16 @@ function Index() {
 
   const fetchPlaylists = () => {
     axios.get('/api/app/playlists')
-    .then(
+      .then(
         (result) => {
-              setIsLoaded(true);
-              setPlaylists(result.data);
+          setIsLoaded(true);
+          setPlaylists(result.data);
         },
         (playlistsError) => {
-              setIsLoaded(true);
-              setError(playlistsError);
+          setIsLoaded(true);
+          setError(playlistsError);
         }
-    )
+      )
   }
 
   return (
