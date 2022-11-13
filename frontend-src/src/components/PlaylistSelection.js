@@ -59,7 +59,6 @@ function PlaylistSelection(props) {
                 return props.playlists.map(playlist => (
                     <PlaylistSelectionItem 
                         playlist={ playlist }
-                        active={ playlist.active }
                         onRemovePlaylist= { onRemovePlaylist }
                     />
                 ));
