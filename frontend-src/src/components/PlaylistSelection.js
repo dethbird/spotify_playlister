@@ -1,14 +1,35 @@
 import axios from 'axios';
-import React, { useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Button, Icon, Item, Loader } from 'semantic-ui-react';
+
+import { getPlaylists } from '../api';
+import { AppContext } from '../contexts/AppContext';
 import AddPlaylistModal from './AddPlaylistModal';
 import PlaylistSelectionItem from './PlaylistSelectionItem';
 
 
 function PlaylistSelection(props) {
+    
+    const [error, setError] = useState(null);
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    const { playlists, setPlaylists } = useContext(AppContext);
+
+    const reloadPlaylists = () => {
+        getPlaylists()
+        .then(
+            (result) => {
+                setIsLoaded(true);
+                setPlaylists(result.data);
+            },
+            (playlistsError) => {
+                setError(playlistsError);
+            }
+        )
+    }
 
     useEffect(() => {
-        props.fetchPlaylists();
+        reloadPlaylists()
     }, []);
 
     const setActiveAll = (active) => {
@@ -17,11 +38,11 @@ function PlaylistSelection(props) {
         })
         .then(
             () => {
-                props.setIsLoaded(false);
-                props.fetchPlaylists();
+                setIsLoaded(false);
+                reloadPlaylists();
             },
             (error) => {
-                props.setError(error);
+                setError(error);
             }
         )
     }
@@ -30,33 +51,33 @@ function PlaylistSelection(props) {
         axios.patch(`/api/app/playlists/invertactive`)
         .then(
             () => {
-                props.setIsLoaded(false);
-                props.fetchPlaylists();
+                setIsLoaded(false);
+                reloadPlaylists();
             },
             (error) => {
-                props.setError(error);
+                setError(error);
             }
         )
     }
 
     const onRemovePlaylist = () => {
-        props.setIsLoaded(false);
-        props.fetchPlaylists();
+        setIsLoaded(false);
+        reloadPlaylists();
     }
 
     const onAddPlaylist = () => {
-        props.setIsLoaded(false);
-        props.fetchPlaylists();
+        setIsLoaded(false);
+        reloadPlaylists();
     }
 
     const renderPlaylists = () => {
-        if (props.error) {
-            return <div>Error: {props.error.message}</div>;
-        } else if (!props.isLoaded) {
+        if (error) {
+            return <div>Error: {error.message}</div>;
+        } else if (!isLoaded) {
             return <Loader active />;
         } else {
-            if (props.playlists.length) {
-                return props.playlists.map(playlist => (
+            if (playlists.length) {
+                return playlists.map(playlist => (
                     <PlaylistSelectionItem 
                         playlist={ playlist }
                         onRemovePlaylist= { onRemovePlaylist }

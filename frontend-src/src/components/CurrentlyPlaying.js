@@ -1,15 +1,31 @@
 import axios from 'axios';
-import React, { useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { toast } from 'react-toastify';
 import { Button, Icon, Item, Loader, Segment } from 'semantic-ui-react'
 
+import { AppContext } from '../contexts/AppContext';
+import { getPlaylists } from '../api';
 import CurrentlyPlayingPlaybackControls from './CurrentlyPlayingPlaybackControls';
 import LikeButton from '../components/LikeButton';
 
-function CurrentlyPlaying(props) {
+function CurrentlyPlaying() {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
     const [playingItem, setPlayingItem] = useState(null);
+    
+    const { setPlaylists } = useContext(AppContext);
+   
+    const reloadPlaylists = () => {
+        getPlaylists()
+        .then(
+            (result) => {
+                setPlaylists(result.data);
+            },
+            (playlistsError) => {
+                setError(playlistsError);
+            }
+        )
+    }
 
     useEffect(() => {
         getCurrentlyPlaying();
@@ -36,7 +52,7 @@ function CurrentlyPlaying(props) {
             .then(
                 (result) => {
                     setIsLoaded(true);
-                    props.fetchPlaylists();
+                    reloadPlaylists();
                     toast.success('Track added')
                 },
                 (error) => {
@@ -53,7 +69,7 @@ function CurrentlyPlaying(props) {
             .then(
                 (result) => {
                     setIsLoaded(true);
-                    props.fetchPlaylists();
+                    getPlaylists();
                     toast.error('Track removed')
                 },
                 (error) => {
