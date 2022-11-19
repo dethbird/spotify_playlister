@@ -1,6 +1,7 @@
-import axios from 'axios';
 import React, { useState } from "react";
 import { Button, Divider, Loader, Modal, Pagination } from 'semantic-ui-react';
+
+import { getPlaylistsSpotify, addPlaylist } from '../api';
 import AddPlaylistModalPage from './AddPlaylistModalPage';
 
 function AddPlaylistModal(props) {
@@ -12,12 +13,7 @@ function AddPlaylistModal(props) {
     const [offset, setOffset] = useState(0);
 
     const fetchPage = (offset = 0) => {
-        axios.get('/api/v1/me/playlists', {
-            params: {
-              limit: limit,
-              offset: offset
-            }
-          })
+          getPlaylistsSpotify(limit, offset)
           .then(
             (result) => {
                 setIsLoaded(true);
@@ -32,9 +28,7 @@ function AddPlaylistModal(props) {
 
     const onSelectPlaylist = (playlistId) => {
         setIsLoaded(false);
-        axios.put('/api/app/playlist', {
-            playlistId: playlistId
-        })
+        addPlaylist(playlistId)
         .then(
             (result) => {
                 setIsLoaded(true);

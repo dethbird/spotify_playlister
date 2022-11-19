@@ -12,6 +12,13 @@ export const deletePlaylist = (id) => {
     return axios.delete(`/api/app/playlist/${id}`)
 }
 
+// Add playlist
+export const addPlaylist = (id) => {
+    return axios.put('/api/app/playlist', {
+        playlistId: id
+    })
+}
+
 // Set playlist active Y / N
 export const setPlaylistActive = (id, active) => {
     return axios.patch(`/api/app/playlist/${id}/active`, {
@@ -52,6 +59,16 @@ export const getPlaylist = (spotifyPlaylistId) => {
     return axios.get(`/api/v1/playlists/${spotifyPlaylistId}`)
 }
 
+// Get playlists paginated
+export const getPlaylistsSpotify = (limit, offset) => {
+    return axios.get('/api/v1/me/playlists', {
+        params: {
+          limit,
+          offset
+        }
+    })
+}
+
 // Get currently playing 
 export const getCurrentlyPlaying = () => {
     return axios.get('/api/v1/me/player/currently-playing')
@@ -75,4 +92,19 @@ export const pause = () => {
 // Play track
 export const play = () => {
     return axios.put("/api/v1/me/player/play")
+}
+
+// Like track
+export const like = (track_id) => {
+    return axios.put(`/api/v1/me/tracks?ids=${track_id}`)
+}
+
+// Unlike track
+export const unlike = (track_id) => {
+    return axios.delete(`/api/v1/me/tracks?ids=${track_id}`)
+}
+
+// Is track liked
+export const liked = (track_id) => {
+    return axios.get(`/api/v1/me/tracks/contains?ids=${track_id}`)
 }

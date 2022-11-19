@@ -1,6 +1,7 @@
-import axios from 'axios';
 import React, { useState, useEffect } from "react";
 import { Icon, Loader } from 'semantic-ui-react'
+
+import { like, unlike, liked } from '../api';
 
 function LikeButton(props) {
     const [error, setError] = useState(null);
@@ -11,7 +12,7 @@ function LikeButton(props) {
         setIsLoaded(false);
         if(likedResponse[0]) {
             // unlike
-            axios.delete(`/api/v1/me/tracks?ids=${props.trackId}`)
+            unlike(props.trackId)
             .then(
                 (result) => {
                     setIsLoaded(true);
@@ -24,7 +25,7 @@ function LikeButton(props) {
             )
         } else {
             // like
-            axios.put(`/api/v1/me/tracks?ids=${props.trackId}`)
+            like(props.trackId)
             .then(
                 (result) => {
                     setIsLoaded(true);
@@ -38,8 +39,8 @@ function LikeButton(props) {
         }
     };
 
-    useEffect(() => {
-        axios.get(`/api/v1/me/tracks/contains?ids=${props.trackId}`)
+    const checkLiked = () => {
+        liked(props.trackId)
         .then(
             (result) => {
                 setIsLoaded(true);
@@ -48,8 +49,12 @@ function LikeButton(props) {
             (error) => {
                 setIsLoaded(true);
                 setError(error);
-                }
+            }
         )
+    }
+
+    useEffect(() => {
+        checkLiked();
     }, [])
 
     if (error) {
