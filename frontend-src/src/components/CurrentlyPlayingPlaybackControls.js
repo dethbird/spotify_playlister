@@ -1,22 +1,21 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Button, Icon } from 'semantic-ui-react'
 
-import { next, previous, pause, play } from '../api';
+import { CurrentlyPlayingContext } from '../contexts/CurrentlyPlayingContext';
+import { next, previous, pause, play, getCurrentlyPlaying } from '../api';
 
-function CurrentlyPlayingPlaybackControls(props) {
-    const [error, setError] = useState(null);
-    const [isLoaded, setIsLoaded] = useState(false);
+function CurrentlyPlayingPlaybackControls() {
+
+    const { setPlayingItem, playingItem } = useContext(CurrentlyPlayingContext);
 
     const nextTrack = () => {
         next()
             .then(
                 () => {
-                    setIsLoaded(true);
-                    setTimeout(props.getCurrentlyPlaying, 250);
+                    setTimeout(getCurrentlyPlayingTrack, 100);
                 },
                 (error) => {
-                    setIsLoaded(true);
-                    setError(error);
+                    console.log(error)
                 }
             )
     }
@@ -25,12 +24,10 @@ function CurrentlyPlayingPlaybackControls(props) {
         previous()
             .then(
                 () => {
-                    setIsLoaded(true);
-                    setTimeout(props.getCurrentlyPlaying, 250);
+                    setTimeout(getCurrentlyPlayingTrack, 100);
                 },
                 (error) => {
-                    setIsLoaded(true);
-                    setError(error);
+                    console.log(error)
                 }
             )
     }
@@ -39,12 +36,10 @@ function CurrentlyPlayingPlaybackControls(props) {
         pause()
             .then(
                 () => {
-                    setIsLoaded(true);
-                    setTimeout(props.getCurrentlyPlaying, 250);
+                    setTimeout(getCurrentlyPlayingTrack, 100);
                 },
                 (error) => {
-                    setIsLoaded(true);
-                    setError(error);
+                    console.log(error)
                 }
             )
     }
@@ -52,12 +47,22 @@ function CurrentlyPlayingPlaybackControls(props) {
         play()
             .then(
                 () => {
-                    setIsLoaded(true);
-                    setTimeout(props.getCurrentlyPlaying, 250);
+                    setTimeout(getCurrentlyPlayingTrack, 100);
                 },
                 (error) => {
-                    setIsLoaded(true);
-                    setError(error);
+                    console.log(error)
+                }
+            )
+    }
+
+    const getCurrentlyPlayingTrack = () => {
+        getCurrentlyPlaying()
+            .then(
+                (result) => {
+                    setPlayingItem(result.data);
+                },
+                (error) => {
+                    console.log(error)
                 }
             )
     }
@@ -67,10 +72,10 @@ function CurrentlyPlayingPlaybackControls(props) {
             <Button onClick={ previousTrack }>
                 <Icon name='step backward' />
             </Button>
-            <Button onClick={ playTrack }>
+            <Button onClick={ playTrack } className={ playingItem.is_playing ? 'active' : null }>
                 <Icon name='play' />
             </Button>
-            <Button onClick={ pauseTrack }>
+            <Button onClick={ pauseTrack } className={ !playingItem.is_playing ? 'active' : null }>
                 <Icon name='pause' />
             </Button>
             <Button onClick={ nextTrack }>
