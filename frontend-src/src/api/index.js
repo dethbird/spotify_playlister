@@ -56,3 +56,23 @@ export const getPlaylist = (spotifyPlaylistId) => {
 export const getCurrentlyPlaying = () => {
     return axios.get('/api/v1/me/player/currently-playing')
 }
+
+// Next track
+export const next = () => {
+    return axios.post("/api/v1/me/player/next")
+}
+
+// Previous track
+export const previous = () => {
+    return axios.post("/api/v1/me/player/previous")
+}
+
+// Pause track
+export const pause = () => {
+    return axios.put("/api/v1/me/player/pause")
+}
+
+// Play track
+export const play = () => {
+    return axios.put("/api/v1/me/player/play")
+}

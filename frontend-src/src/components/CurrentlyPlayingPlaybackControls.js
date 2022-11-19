@@ -1,15 +1,16 @@
-import axios from 'axios';
 import React, { useState } from "react";
 import { Button, Icon } from 'semantic-ui-react'
+
+import { next, previous, pause, play } from '../api';
 
 function CurrentlyPlayingPlaybackControls(props) {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
 
-    const next = () => {
-        axios.post("/api/v1/me/player/next")
+    const nextTrack = () => {
+        next()
             .then(
-                (result) => {
+                () => {
                     setIsLoaded(true);
                     setTimeout(props.getCurrentlyPlaying, 250);
                 },
@@ -20,10 +21,10 @@ function CurrentlyPlayingPlaybackControls(props) {
             )
     }
 
-    const previous = () => {
-        axios.post("/api/v1/me/player/previous")
+    const previousTrack = () => {
+        previous()
             .then(
-                (result) => {
+                () => {
                     setIsLoaded(true);
                     setTimeout(props.getCurrentlyPlaying, 250);
                 },
@@ -34,10 +35,10 @@ function CurrentlyPlayingPlaybackControls(props) {
             )
     }
 
-    const pause = () => {
-        axios.put("/api/v1/me/player/pause")
+    const pauseTrack = () => {
+        pause()
             .then(
-                (result) => {
+                () => {
                     setIsLoaded(true);
                     setTimeout(props.getCurrentlyPlaying, 250);
                 },
@@ -47,10 +48,10 @@ function CurrentlyPlayingPlaybackControls(props) {
                 }
             )
     }
-    const play = () => {
-        axios.put("/api/v1/me/player/play")
+    const playTrack = () => {
+        play()
             .then(
-                (result) => {
+                () => {
                     setIsLoaded(true);
                     setTimeout(props.getCurrentlyPlaying, 250);
                 },
@@ -63,16 +64,16 @@ function CurrentlyPlayingPlaybackControls(props) {
 
     return (
         <Button.Group icon>
-            <Button onClick={ previous }>
+            <Button onClick={ previousTrack }>
                 <Icon name='step backward' />
             </Button>
-            <Button onClick={ play }>
+            <Button onClick={ playTrack }>
                 <Icon name='play' />
             </Button>
-            <Button onClick={ pause }>
+            <Button onClick={ pauseTrack }>
                 <Icon name='pause' />
             </Button>
-            <Button onClick={ next }>
+            <Button onClick={ nextTrack }>
                 <Icon name='step forward' />
             </Button>
         </Button.Group>
