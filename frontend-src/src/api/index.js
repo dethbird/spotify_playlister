@@ -1,9 +1,22 @@
 import axios from 'axios';
 
-/** App endpoints */
+/** App endpoints ----------------------------------*/
+
 // Get all playlists
 export const getPlaylists = () => {
     return axios.get('/api/app/playlists')
+}
+
+// Delete playlist
+export const deletePlaylist = (id) => {
+    return axios.delete(`/api/app/playlist/${id}`)
+}
+
+// Set playlist active Y / N
+export const setPlaylistActive = (id, active) => {
+    return axios.patch(`/api/app/playlist/${id}/active`, {
+        'active' : active
+    })
 }
 
 // Set all playlists active / inactive
@@ -18,4 +31,28 @@ export const setActiveInverse = () => {
     return axios.patch(`/api/app/playlists/invertactive`)
 }
 
-/** Spotify endpoints */
+// Add track to playlists
+export const addToPlaylists = (track_uri) => {
+    return axios.put('/api/app/playlists/addtrack', {
+        trackUri: track_uri
+    })
+}
+
+// Remove track from playlists
+export const removeFromPlaylists = (track_uri) => {
+    return axios.patch('/api/app/playlists/removetrack', {
+        trackUri: track_uri
+    })
+}
+
+/** Spotify endpoints ----------------------------- */
+
+// Get playlist
+export const getPlaylist = (spotifyPlaylistId) => {
+    return axios.get(`/api/v1/playlists/${spotifyPlaylistId}`)
+}
+
+// Get currently playing 
+export const getCurrentlyPlaying = () => {
+    return axios.get('/api/v1/me/player/currently-playing')
+}

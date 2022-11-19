@@ -1,21 +1,24 @@
-import axios from 'axios';
 import React, { useState, useEffect } from "react";
 import { Button, Checkbox, Icon, Item, Label, Loader, Segment } from 'semantic-ui-react';
 
-function PlaylistSelectionItem(props) {
+import { getPlaylist, deletePlaylist, setPlaylistActive } from '../api';
+
+
+function PlaylistSelectionItem({ playlist, onRemovePlaylist}) {
+
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
     const [spotifyPlaylist, setSpotifyPlaylist] = useState(null);
-    const [checked, setChecked] = useState(props.playlist.active == 'Y' ? true : false);
+    const [checked, setChecked] = useState(playlist.active == 'Y' ? true : false);
     
 
     useEffect(() => {
-        fetchPlaylist();
+        getSpotifyPlaylist();
     }, []);
 
-    const fetchPlaylist = () => {
+    const getSpotifyPlaylist = () => {
         setIsLoaded(false);
-        axios.get(`/api/v1/playlists/${props.playlist.spotify_playlist_id}`)
+        getPlaylist(playlist.spotify_playlist_id)
         .then(
             (result) => {
                 setIsLoaded(true);
@@ -30,11 +33,11 @@ function PlaylistSelectionItem(props) {
 
     const removePlaylist = () => {
         setIsLoaded(false);
-        axios.delete(`/api/app/playlist/${props.playlist.id}`)
+        deletePlaylist(playlist.id)
         .then(
             () => {
                 setIsLoaded(true);
-                props.onRemovePlaylist()
+                onRemovePlaylist()
             },
             (error) => {
                 setIsLoaded(true);
@@ -44,9 +47,7 @@ function PlaylistSelectionItem(props) {
     }
 
     const onToggleActive = (active) => {
-        axios.patch(`/api/app/playlist/${props.playlist.id}/active`, {
-            'active' : active ? 'Y' : 'N'
-        })
+        setPlaylistActive(playlist.id, active ? 'Y' : 'N')
         .then(
             () => {
                 setChecked(active);

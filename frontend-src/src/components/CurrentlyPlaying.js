@@ -1,10 +1,9 @@
-import axios from 'axios';
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { Button, Icon, Item, Loader, Segment } from 'semantic-ui-react'
+import { Button, Item, Loader, Segment } from 'semantic-ui-react'
 
 import { AppContext } from '../contexts/AppContext';
-import { getPlaylists } from '../api';
+import { addToPlaylists, getPlaylists, getCurrentlyPlaying, removeFromPlaylists } from '../api';
 import CurrentlyPlayingPlaybackControls from './CurrentlyPlayingPlaybackControls';
 import LikeButton from '../components/LikeButton';
 
@@ -28,11 +27,11 @@ function CurrentlyPlaying() {
     }
 
     useEffect(() => {
-        getCurrentlyPlaying();
+        getCurrentlyPlayingTrack();
     }, [])
 
-    const getCurrentlyPlaying = () => {
-        axios.get("/api/v1/me/player/currently-playing")
+    const getCurrentlyPlayingTrack = () => {
+        getCurrentlyPlaying()
             .then(
                 (result) => {
                     setIsLoaded(true);
@@ -45,12 +44,10 @@ function CurrentlyPlaying() {
             )
     }
 
-    const addToPlaylists = () => {
-        axios.put("/api/app/playlists/addtrack", {
-            trackUri: playingItem.item.uri
-        })
+    const addTrackToPlaylists = () => {
+        addToPlaylists(playingItem.item.uri)
             .then(
-                (result) => {
+                () => {
                     setIsLoaded(true);
                     reloadPlaylists();
                     toast.success('Track added')
@@ -62,12 +59,10 @@ function CurrentlyPlaying() {
             )
     }
 
-    const removeFromPlaylists = () => {
-        axios.patch("/api/app/playlists/removetrack", {
-            trackUri: playingItem.item.uri
-        })
+    const removeTrackFromPlaylists = () => {
+        removeFromPlaylists(playingItem.item.uri)
             .then(
-                (result) => {
+                () => {
                     setIsLoaded(true);
                     getPlaylists();
                     toast.error('Track removed')
@@ -100,13 +95,13 @@ function CurrentlyPlaying() {
                                 <Item.Extra>
                                     <LikeButton trackId={ playingItem.item.id } />
                                     <Button.Group>
-                                        <Button basic color='green' icon='plus circle' title='Add to Selected Playlists' onClick={ addToPlaylists } />
-                                        <Button basic color='red' icon='times circle' title='Remove from Selected Playlists' onClick={ removeFromPlaylists } />
-                                        <Button basic color='blue' icon='sync' title="Show Me What's Playing" onClick={ getCurrentlyPlaying }/>
+                                        <Button basic color='green' icon='plus circle' title='Add to Selected Playlists' onClick={ addTrackToPlaylists } />
+                                        <Button basic color='red' icon='times circle' title='Remove from Selected Playlists' onClick={ removeTrackFromPlaylists } />
+                                        <Button basic color='blue' icon='sync' title="Show Me What's Playing" onClick={ getCurrentlyPlayingTrack }/>
                                     </Button.Group>
                                 </Item.Extra>
                                 <Item.Extra>
-                                    <CurrentlyPlayingPlaybackControls getCurrentlyPlaying={ getCurrentlyPlaying }/>
+                                    <CurrentlyPlayingPlaybackControls getCurrentlyPlayingTrack={ getCurrentlyPlayingTrack }/>
                                 </Item.Extra>
                             </Item.Content>
                         </Item>
@@ -118,7 +113,7 @@ function CurrentlyPlaying() {
 
         return <Segment textAlign='center' compact>
             Nothing's playing. Play something in Spotify then click the button below:<br />
-            <Button basic color='blue' icon='sync' title="Show Me What's Playing" onClick={getCurrentlyPlaying} />
+            <Button basic color='blue' icon='sync' title="Show Me What's Playing" onClick={getCurrentlyPlayingTrack} />
         </Segment>
         
     }
