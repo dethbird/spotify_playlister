@@ -1,14 +1,13 @@
-import axios from 'axios';
 import React, { useContext, useState, useEffect } from "react";
 import { Button, Icon, Item, Loader } from 'semantic-ui-react';
 
-import { getPlaylists } from '../api';
+import { getPlaylists, setActiveAll, setActiveInverse } from '../api';
 import { AppContext } from '../contexts/AppContext';
 import AddPlaylistModal from './AddPlaylistModal';
 import PlaylistSelectionItem from './PlaylistSelectionItem';
 
 
-function PlaylistSelection(props) {
+function PlaylistSelection() {
     
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -32,10 +31,8 @@ function PlaylistSelection(props) {
         reloadPlaylists()
     }, []);
 
-    const setActiveAll = (active) => {
-        axios.patch(`/api/app/playlists/active`, {
-            'active' : active
-        })
+    const setPlaylistsActiveAll = (active) => {
+        setActiveAll(active)
         .then(
             () => {
                 setIsLoaded(false);
@@ -47,8 +44,8 @@ function PlaylistSelection(props) {
         )
     }
 
-    const setActiveInverse = () => {
-        axios.patch(`/api/app/playlists/invertactive`)
+    const setPlaylistsActiveInverse = () => {
+        setActiveInverse()
         .then(
             () => {
                 setIsLoaded(false);
@@ -95,9 +92,9 @@ function PlaylistSelection(props) {
       <div className='playlist-selection'>
         <Button.Group>
             <AddPlaylistModal onAddPlaylist={ onAddPlaylist } />
-            <Button basic color='grey' icon='check square' title='Select All' onClick={ () => { setActiveAll('Y')}} />
-            <Button basic color='grey' icon='check square outline' title='Select None' onClick={ () => { setActiveAll('N')}} />
-            <Button basic color='grey' icon='exchange' title='Invert Selection' onClick={ setActiveInverse } />
+            <Button basic color='grey' icon='check square' title='Select All' onClick={ () => { setPlaylistsActiveAll('Y')}} />
+            <Button basic color='grey' icon='check square outline' title='Select None' onClick={ () => { setPlaylistsActiveAll('N')}} />
+            <Button basic color='grey' icon='exchange' title='Invert Selection' onClick={ setPlaylistsActiveInverse } />
         </Button.Group>
         <Item.Group divided link>{ renderPlaylists() }</Item.Group>
       </div>
