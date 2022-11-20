@@ -8,12 +8,18 @@ import User from '../components/User';
 
 function Index() {
   const [playlists, setPlaylists] = useState([]);
+  const [playlistsError, setPlaylistsError] = useState(null);
+  const [playlistsLoaded, setPlaylistsLoaded] = useState(false);
 
   return (
     <AppContext.Provider value={
       {
         playlists,
-        setPlaylists
+        setPlaylists,
+        playlistsError,
+        setPlaylistsError,
+        playlistsLoaded,
+        setPlaylistsLoaded
       }
     }>
       <Container>

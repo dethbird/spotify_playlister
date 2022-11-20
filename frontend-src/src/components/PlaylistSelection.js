@@ -9,20 +9,24 @@ import PlaylistSelectionItem from './PlaylistSelectionItem';
 
 function PlaylistSelection() {
     
-    const [error, setError] = useState(null);
-    const [isLoaded, setIsLoaded] = useState(false);
-
-    const { playlists, setPlaylists } = useContext(AppContext);
+    const { 
+        playlists,
+        setPlaylists,
+        playlistsError,
+        setPlaylistsError,
+        playlistsLoaded,
+        setPlaylistsLoaded
+    } = useContext(AppContext);
 
     const reloadPlaylists = () => {
         getPlaylists()
         .then(
             (result) => {
-                setIsLoaded(true);
+                setPlaylistsLoaded(true);
                 setPlaylists(result.data);
             },
             (playlistsError) => {
-                setError(playlistsError);
+                setPlaylistsError(playlistsError);
             }
         )
     }
@@ -35,11 +39,11 @@ function PlaylistSelection() {
         setActiveAll(active)
         .then(
             () => {
-                setIsLoaded(false);
+                setPlaylistsLoaded(false);
                 reloadPlaylists();
             },
-            (error) => {
-                setError(error);
+            (playlistsError) => {
+                setPlaylistsError(playlistsError);
             }
         )
     }
@@ -48,29 +52,29 @@ function PlaylistSelection() {
         setActiveInverse()
         .then(
             () => {
-                setIsLoaded(false);
+                setPlaylistsLoaded(false);
                 reloadPlaylists();
             },
-            (error) => {
-                setError(error);
+            (playlistsError) => {
+                setPlaylistsError(playlistsError);
             }
         )
     }
 
     const onRemovePlaylist = () => {
-        setIsLoaded(false);
+        setPlaylistsLoaded(false);
         reloadPlaylists();
     }
 
     const onAddPlaylist = () => {
-        setIsLoaded(false);
+        setPlaylistsLoaded(false);
         reloadPlaylists();
     }
 
     const renderPlaylists = () => {
-        if (error) {
-            return <div>Error: {error.message}</div>;
-        } else if (!isLoaded) {
+        if (playlistsError) {
+            return <div>Error: {playlistsError.message}</div>;
+        } else if (!playlistsLoaded) {
             return <Loader active />;
         } else {
             if (playlists.length) {
