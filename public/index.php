@@ -114,11 +114,18 @@ $app->get('/logout', function (Request $request, Response $response, $args) {
 
 # index
 $app->get('/', function (Request $request, Response $response, $args) use ($spotifyConnect, $spotifyApi, $config) {
-
     $view = Twig::fromRequest($request);
     $spotify_user = null;
     $user = null;
     $login_url = null;
+
+    try {
+        $spotify_user = $spotifyApi->me();
+    } catch (Exception $e) {
+        performLogout();
+        header('Location: /');
+        # noop
+    }
     if (!isset($_SESSION['SPOTIFY_ACCESS_TOKEN'])) {
         $_SESSION['SPOTIFY_STATE'] = $spotifyConnect->generateState();
         $login_url = $spotifyConnect->getAuthorizeUrl([
@@ -126,17 +133,9 @@ $app->get('/', function (Request $request, Response $response, $args) use ($spot
             'state' => $_SESSION['SPOTIFY_STATE']
         ]);
     } else {
-        try {
-            $spotify_user = $spotifyApi->me();
-            $users = array_values(R::find(
-                'user', ' spotify_user_id = ? LIMIT 1', [ $spotify_user->id ] ));
-            $user = $users[0];
-            
-        } catch (Exception $e) {
-            performLogout();
-            header('Location: /');
-            # noop
-        }
+        $users = array_values(R::find(
+            'user', ' spotify_user_id = ? LIMIT 1', [ $spotify_user->id ] ));
+        $user = $users[0];
     }
     return $view->render($response, 'index.html', [
         'spotify_user_json' => json_encode($spotify_user),
