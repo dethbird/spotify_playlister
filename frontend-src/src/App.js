@@ -15,7 +15,7 @@ function authRender() {
 }
 
 function App() {
-  console.log(window.user, window.spotify_user);
+  // console.log(window.user, window.spotify_user);
   return (
     <div className='App'>
         { authRender() }

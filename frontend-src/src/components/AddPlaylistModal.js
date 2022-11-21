@@ -103,6 +103,10 @@ function AddPlaylistModal(props) {
                 <Modal.Description>
                     { renderPage() }
                 </Modal.Description>
+                <Divider />
+                <Modal.Description>
+                    { renderPagination() }
+                </Modal.Description>
             </Modal.Content>
             <Modal.Actions>
                 <Button color='blue' onClick={() => setOpen(false)}>
