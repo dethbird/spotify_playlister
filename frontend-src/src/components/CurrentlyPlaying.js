@@ -13,14 +13,14 @@ function CurrentlyPlaying() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [playingItem, setPlayingItem] = useState(null);
     
-    const { setPlaylists } = useContext(AppContext);
+    const { setPlaylists, setPlaylistsLoaded } = useContext(AppContext);
    
     const reloadPlaylists = () => {
-        console.log('reloadPlaylists');
         getPlaylists()
         .then(
             (result) => {
                 setPlaylists(result.data);
+                setPlaylistsLoaded(true);
             },
             (playlistsError) => {
                 setError(playlistsError);
@@ -50,7 +50,7 @@ function CurrentlyPlaying() {
         addToPlaylists(playingItem.item.uri)
             .then(
                 () => {
-                    setIsLoaded(true);
+                    setPlaylistsLoaded(false);
                     setTimeout(reloadPlaylists, 100);
                     toast.success('Track added')
                 },
@@ -65,7 +65,7 @@ function CurrentlyPlaying() {
         removeFromPlaylists(playingItem.item.uri)
             .then(
                 () => {
-                    setIsLoaded(true);
+                    setPlaylistsLoaded(false);
                     setTimeout(reloadPlaylists, 100);
                     toast.error('Track removed')
                 },
