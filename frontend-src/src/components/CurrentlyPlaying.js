@@ -38,6 +38,9 @@ function CurrentlyPlaying() {
                 (result) => {
                     setIsLoaded(true);
                     setPlayingItem(result.data);
+                    if(result.data.is_playing === true) {
+                        setTimeout(getCurrentlyPlayingTrack, 1000);
+                    }
                 },
                 (error) => {
                     setIsLoaded(true);
