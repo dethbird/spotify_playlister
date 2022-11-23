@@ -5,6 +5,7 @@ import { getPlaylists, setActiveAll, setActiveInverse } from '../api';
 import { AppContext } from '../contexts/AppContext';
 import AddPlaylistModal from './AddPlaylistModal';
 import PlaylistSelectionItem from './PlaylistSelectionItem';
+import { extractActivePlaylistIds } from '../utils/playlists'
 
 
 function PlaylistSelection() {
@@ -15,7 +16,8 @@ function PlaylistSelection() {
         playlistsError,
         setPlaylistsError,
         playlistsLoaded,
-        setPlaylistsLoaded
+        setPlaylistsLoaded,
+        activePlaylists
     } = useContext(AppContext);
 
     const reloadPlaylists = () => {
@@ -24,6 +26,7 @@ function PlaylistSelection() {
             (result) => {
                 setPlaylistsLoaded(true);
                 setPlaylists(result.data);
+                activePlaylists.current = (extractActivePlaylistIds(result.data))
             },
             (playlistsError) => {
                 setPlaylistsError(playlistsError);

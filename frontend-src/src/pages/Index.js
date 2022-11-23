@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Container, Grid } from 'semantic-ui-react'
 
 import { AppContext } from '../contexts/AppContext';
@@ -10,6 +10,7 @@ function Index() {
   const [playlists, setPlaylists] = useState([]);
   const [playlistsError, setPlaylistsError] = useState(null);
   const [playlistsLoaded, setPlaylistsLoaded] = useState(false);
+  const activePlaylists = useRef([]);
 
   return (
     <AppContext.Provider value={
@@ -19,7 +20,8 @@ function Index() {
         playlistsError,
         setPlaylistsError,
         playlistsLoaded,
-        setPlaylistsLoaded
+        setPlaylistsLoaded,
+        activePlaylists
       }
     }>
       <Container>

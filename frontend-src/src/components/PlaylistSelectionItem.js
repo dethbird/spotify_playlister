@@ -1,15 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Button, Checkbox, Icon, Item, Label, Loader, Segment } from 'semantic-ui-react';
 
 import { getPlaylist, deletePlaylist, setPlaylistActive } from '../api';
+import { updateActivePlaylists } from '../utils/playlists';
+import { AppContext } from '../contexts/AppContext';
 
 
 function PlaylistSelectionItem({ playlist, onRemovePlaylist}) {
 
+    const { 
+        activePlaylists
+    } = useContext(AppContext);
+
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
     const [spotifyPlaylist, setSpotifyPlaylist] = useState(null);
-    const [checked, setChecked] = useState(playlist.active === 'Y' ? true : false);
+    const [checked, setChecked] = useState(activePlaylists.current.includes(parseInt(playlist.id)))
     
 
     useEffect(() => {
@@ -50,6 +56,9 @@ function PlaylistSelectionItem({ playlist, onRemovePlaylist}) {
         setPlaylistActive(playlist.id, active ? 'Y' : 'N')
         .then(
             () => {
+                activePlaylists.current = updateActivePlaylists(    
+                        activePlaylists.current, playlist.id, active);
+                console.log(activePlaylists.current);
                 setChecked(active);
             },
             (error) => {
