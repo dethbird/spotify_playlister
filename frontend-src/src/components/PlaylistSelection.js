@@ -5,7 +5,7 @@ import { getPlaylists, setActiveAll, setActiveInverse } from '../api';
 import { AppContext } from '../contexts/AppContext';
 import AddPlaylistModal from './AddPlaylistModal';
 import PlaylistSelectionItem from './PlaylistSelectionItem';
-import { extractActivePlaylistIds } from '../utils/playlists'
+import { extractActivePlaylistIds, setActivePlaylistsAll, setActivePlaylistsInverse, updatePlaylistsSetCurrentlyActive } from '../utils/playlists'
 
 
 function PlaylistSelection() {
@@ -42,8 +42,11 @@ function PlaylistSelection() {
         setActiveAll(active)
         .then(
             () => {
-                setPlaylistsLoaded(false);
-                reloadPlaylists();
+                activePlaylists.current = setActivePlaylistsAll(
+                    playlists, active === 'Y' ? true : false);
+                    setPlaylists(
+                        updatePlaylistsSetCurrentlyActive(playlists, activePlaylists.current));
+                    setPlaylistsLoaded(Date.now());
             },
             (playlistsError) => {
                 setPlaylistsError(playlistsError);
@@ -55,8 +58,11 @@ function PlaylistSelection() {
         setActiveInverse()
         .then(
             () => {
-                setPlaylistsLoaded(false);
-                reloadPlaylists();
+                activePlaylists.current = setActivePlaylistsInverse(
+                    playlists, activePlaylists.current);
+                setPlaylists(
+                    updatePlaylistsSetCurrentlyActive(playlists, activePlaylists.current));
+                setPlaylistsLoaded(Date.now());
             },
             (playlistsError) => {
                 setPlaylistsError(playlistsError);
@@ -77,10 +83,11 @@ function PlaylistSelection() {
     const renderPlaylists = () => {
         if (playlistsError) {
             return <div>Error: {playlistsError.message}</div>;
-        } else if (!playlistsLoaded) {
+        } else if (playlistsLoaded === false) {
             return <Loader active />;
         } else {
             if (playlists.length) {
+                console.log(playlists.map(playlist => playlist.active))
                 return playlists.map(playlist => (
                     <PlaylistSelectionItem 
                         playlist={ playlist }

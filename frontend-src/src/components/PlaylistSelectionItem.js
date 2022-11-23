@@ -58,7 +58,6 @@ function PlaylistSelectionItem({ playlist, onRemovePlaylist}) {
             () => {
                 activePlaylists.current = updateActivePlaylists(    
                         activePlaylists.current, playlist.id, active);
-                console.log(activePlaylists.current);
                 setChecked(active);
             },
             (error) => {
