@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { Button, Icon } from 'semantic-ui-react'
 
 import { CurrentlyPlayingContext } from '../contexts/CurrentlyPlayingContext';

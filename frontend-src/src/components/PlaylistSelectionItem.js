@@ -9,7 +9,7 @@ function PlaylistSelectionItem({ playlist, onRemovePlaylist}) {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
     const [spotifyPlaylist, setSpotifyPlaylist] = useState(null);
-    const [checked, setChecked] = useState(playlist.active == 'Y' ? true : false);
+    const [checked, setChecked] = useState(playlist.active === 'Y' ? true : false);
     
 
     useEffect(() => {

@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { Button, Icon, Item, Loader } from 'semantic-ui-react';
 
 import { getPlaylists, setActiveAll, setActiveInverse } from '../api';
