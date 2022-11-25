@@ -1,11 +1,17 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { Button, Icon, Item, Loader } from 'semantic-ui-react';
 
 import { getPlaylists, setActiveAll, setActiveInverse } from '../api';
 import { AppContext } from '../contexts/AppContext';
 import AddPlaylistModal from './AddPlaylistModal';
 import PlaylistSelectionItem from './PlaylistSelectionItem';
-import { extractActivePlaylistIds, setActivePlaylistsAll, setActivePlaylistsInverse, updatePlaylistsSetCurrentlyActive } from '../utils/playlists'
+import { 
+    extractActivePlaylistIds,
+    setActivePlaylistsAll,
+    setActivePlaylistsInverse,
+    updatePlaylistsSetCurrentlyActive,
+    updatePlaylistsCheckedUI 
+} from '../utils/playlists';
 
 
 function PlaylistSelection() {
@@ -17,7 +23,8 @@ function PlaylistSelection() {
         setPlaylistsError,
         playlistsLoaded,
         setPlaylistsLoaded,
-        activePlaylists
+        activePlaylists,
+        playlistRefs
     } = useContext(AppContext);
 
     const reloadPlaylists = () => {
@@ -46,7 +53,7 @@ function PlaylistSelection() {
                     playlists, active === 'Y' ? true : false);
                     setPlaylists(
                         updatePlaylistsSetCurrentlyActive(playlists, activePlaylists.current));
-                    setPlaylistsLoaded(Date.now());
+                    updatePlaylistsCheckedUI(playlistRefs.current, playlists);
             },
             (playlistsError) => {
                 setPlaylistsError(playlistsError);
@@ -62,7 +69,7 @@ function PlaylistSelection() {
                     playlists, activePlaylists.current);
                 setPlaylists(
                     updatePlaylistsSetCurrentlyActive(playlists, activePlaylists.current));
-                setPlaylistsLoaded(Date.now());
+                updatePlaylistsCheckedUI(playlistRefs.current, playlists);
             },
             (playlistsError) => {
                 setPlaylistsError(playlistsError);
@@ -87,11 +94,14 @@ function PlaylistSelection() {
             return <Loader active />;
         } else {
             if (playlists.length) {
-                console.log(playlists.map(playlist => playlist.active))
-                return playlists.map(playlist => (
+                return playlists.map((playlist, index) => (
                     <PlaylistSelectionItem 
                         playlist={ playlist }
                         onRemovePlaylist= { onRemovePlaylist }
+                        ref={(element) => {
+                            playlistRefs.current[parseInt(playlist.id)] = element;
+                        }}
+                        key={index}
                     />
                 ));
             } else {

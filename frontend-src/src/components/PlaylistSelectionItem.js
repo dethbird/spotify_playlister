@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { forwardRef, useContext, useState, useEffect } from "react";
 import { Button, Checkbox, Icon, Item, Label, Loader, Segment } from 'semantic-ui-react';
 
 import { getPlaylist, deletePlaylist, setPlaylistActive } from '../api';
@@ -6,7 +6,7 @@ import { updateActivePlaylists } from '../utils/playlists';
 import { AppContext } from '../contexts/AppContext';
 
 
-function PlaylistSelectionItem({ playlist, onRemovePlaylist}) {
+const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist}, ref) => {
 
     const { 
         activePlaylists
@@ -17,7 +17,6 @@ function PlaylistSelectionItem({ playlist, onRemovePlaylist}) {
     const [spotifyPlaylist, setSpotifyPlaylist] = useState(null);
     const [checked, setChecked] = useState(activePlaylists.current.includes(parseInt(playlist.id)))
     
-
     useEffect(() => {
         getSpotifyPlaylist();
     }, []);
@@ -90,6 +89,7 @@ function PlaylistSelectionItem({ playlist, onRemovePlaylist}) {
                             toggle
                             checked={ checked }
                             onChange={ (event,data) => { onToggleActive(data.checked); } }
+                            ref={ ref }
                         />
                         <br />
                         <Button
@@ -106,6 +106,6 @@ function PlaylistSelectionItem({ playlist, onRemovePlaylist}) {
         }
     }
 
-}
+});
 
 export default PlaylistSelectionItem;

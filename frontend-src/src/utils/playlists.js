@@ -27,11 +27,18 @@ export const setActivePlaylistsInverse = (playlists, current) => {
 export const updatePlaylistsSetCurrentlyActive = (playlists, current) => {
     let newPlaylists = [];
     for (const i in playlists) {
-        let playlist = {};
-        Object.assign(playlist, playlists[i]);
+        let playlist = playlists[i];
         playlist.active = current.includes(parseInt(playlist.id)) ? 'Y' : 'N';
         newPlaylists.push(playlist)
     }
     return newPlaylists;
 }
 
+export const updatePlaylistsCheckedUI = (refs, playlists) => {
+    console.log(refs, playlists);
+    for (const i in playlists) {
+        const ref = refs[parseInt(playlists[i].id)];
+        // console.log(ref, ref.inputRef.current);
+        ref.inputRef.current.checked = playlists[i].active === 'Y' ? true : false;
+    }
+}
