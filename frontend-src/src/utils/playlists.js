@@ -28,6 +28,7 @@ export const updatePlaylistsSetCurrentlyActive = (playlists, current) => {
     let newPlaylists = [];
     for (const i in playlists) {
         let playlist = playlists[i];
+        console.log(playlists[i], i)
         playlist.active = current.includes(parseInt(playlist.id)) ? 'Y' : 'N';
         newPlaylists.push(playlist)
     }
@@ -35,10 +36,9 @@ export const updatePlaylistsSetCurrentlyActive = (playlists, current) => {
 }
 
 export const updatePlaylistsCheckedUI = (refs, playlists) => {
-    console.log(refs, playlists);
     for (const i in playlists) {
-        const ref = refs[parseInt(playlists[i].id)];
-        // console.log(ref, ref.inputRef.current);
-        ref.inputRef.current.checked = playlists[i].active === 'Y' ? true : false;
+        console.log(playlists[i]);
+        console.log(refs[parseInt(playlists[i].id)]);
+        refs[parseInt(playlists[i].id)].inputRef.current.checked = playlists[i].active === 'Y' ? true : false
     }
 }

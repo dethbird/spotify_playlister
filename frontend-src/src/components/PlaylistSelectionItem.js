@@ -72,7 +72,7 @@ const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist}, ref) =
     } else {
         if (spotifyPlaylist) {
             return (
-                <Item key={ spotifyPlaylist.id }>
+                <Item>
                     <Item.Image size='tiny' src={ spotifyPlaylist.images[0].url } />
                     <Item.Content>
                         <Item.Header as='a' href={spotifyPlaylist.external_urls.spotify} target='_blank'>{ spotifyPlaylist.name }</Item.Header>
@@ -88,7 +88,7 @@ const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist}, ref) =
                         <Checkbox 
                             toggle
                             checked={ checked }
-                            onChange={ (event,data) => { onToggleActive(data.checked); } }
+                            onChange={ (event,data) => { onToggleActive( data.checked); } }
                             ref={ ref }
                         />
                         <br />

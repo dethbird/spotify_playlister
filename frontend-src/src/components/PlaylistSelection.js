@@ -17,8 +17,8 @@ import {
 function PlaylistSelection() {
     
     const { 
-        playlists,
-        setPlaylists,
+        // playlists,
+        // setPlaylists,
         playlistsError,
         setPlaylistsError,
         playlistsLoaded,
@@ -27,12 +27,14 @@ function PlaylistSelection() {
         playlistRefs
     } = useContext(AppContext);
 
+    const playlists = useRef([]);
+
     const reloadPlaylists = () => {
         getPlaylists()
         .then(
             (result) => {
                 setPlaylistsLoaded(true);
-                setPlaylists(result.data);
+                playlists.current = result.data;
                 activePlaylists.current = (extractActivePlaylistIds(result.data))
             },
             (playlistsError) => {
@@ -50,10 +52,9 @@ function PlaylistSelection() {
         .then(
             () => {
                 activePlaylists.current = setActivePlaylistsAll(
-                    playlists, active === 'Y' ? true : false);
-                    setPlaylists(
-                        updatePlaylistsSetCurrentlyActive(playlists, activePlaylists.current));
-                    updatePlaylistsCheckedUI(playlistRefs.current, playlists);
+                    playlists.current, active === 'Y' ? true : false);
+                playlists.current = updatePlaylistsSetCurrentlyActive(playlists.current, activePlaylists.current)
+                updatePlaylistsCheckedUI(playlistRefs.current, playlists.current);
             },
             (playlistsError) => {
                 setPlaylistsError(playlistsError);
@@ -66,10 +67,9 @@ function PlaylistSelection() {
         .then(
             () => {
                 activePlaylists.current = setActivePlaylistsInverse(
-                    playlists, activePlaylists.current);
-                setPlaylists(
-                    updatePlaylistsSetCurrentlyActive(playlists, activePlaylists.current));
-                updatePlaylistsCheckedUI(playlistRefs.current, playlists);
+                    playlists.current, activePlaylists.current);
+                playlists.current = updatePlaylistsSetCurrentlyActive(playlists.current, activePlaylists.current);
+                updatePlaylistsCheckedUI(playlistRefs.current, playlists.current);
             },
             (playlistsError) => {
                 setPlaylistsError(playlistsError);
@@ -93,16 +93,17 @@ function PlaylistSelection() {
         } else if (playlistsLoaded === false) {
             return <Loader active />;
         } else {
-            if (playlists.length) {
-                return playlists.map((playlist, index) => (
+            if (playlists.current.length) {
+                return playlists.current.map((playlist) => (
                     <PlaylistSelectionItem 
                         playlist={ playlist }
                         onRemovePlaylist= { onRemovePlaylist }
                         ref={(element) => {
                             playlistRefs.current[parseInt(playlist.id)] = element;
                         }}
-                        key={index}
+                        key={parseInt(playlist.id)}
                     />
+                    
                 ));
             } else {
                 return (
