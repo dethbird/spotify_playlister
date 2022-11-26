@@ -65,48 +65,60 @@ const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist}, ref) =
         )
     }
 
-    if (error) {
-        return <div>Error: {error.message}</div>;
-    } else if (!isLoaded) {
-        return <Loader active />;
-    } else {
+
+    const renderSpotifyPlaylistDetailsImage = () => {
+        if (spotifyPlaylist) {
+            return <Item.Image size='tiny' src={ spotifyPlaylist.images[0].url } />
+        }
+    }
+
+    const renderSpotifyPlaylistDetailsContent = () => {
+        if (!isLoaded)
+            return  <Item.Content><Loader active /></Item.Content>;
         if (spotifyPlaylist) {
             return (
-                <Item>
-                    <Item.Image size='tiny' src={ spotifyPlaylist.images[0].url } />
-                    <Item.Content>
-                        <Item.Header as='a' href={spotifyPlaylist.uri} target='_blank'>{ spotifyPlaylist.name }</Item.Header>
-                        <Item.Description>{ spotifyPlaylist.description }</Item.Description>
-                        <Item.Meta>
-                            by { spotifyPlaylist.owner.display_name}
-                        </Item.Meta>
-                        <Item.Extra>
-                            <Label><Icon name='music' />{ spotifyPlaylist.tracks.total } track(s)</Label>
-                        </Item.Extra>
-                    </Item.Content>
-                    <Segment basic floated='right' textAlign='right'>
-                        <Checkbox 
-                            toggle
-                            checked={ checked }
-                            onChange={ (event,data) => { onToggleActive( data.checked); } }
-                            ref={ ref }
-                            getSpotifyPlaylist={ getSpotifyPlaylist }
-                        />
-                        <br />
-                        <Button
-                            title='Remove this Playlist'
-                            icon
-                            size='small'
-                            basic
-                            color='red'
-                            onClick={ removePlaylist }
-                        ><Icon name='times circle' /></Button>
-                    </Segment>
-                </Item>
+                <Item.Content>
+                    <Item.Header as='a' href={spotifyPlaylist.uri} target='_blank'>{ spotifyPlaylist.name }</Item.Header>
+                    <Item.Description>{ spotifyPlaylist.description }</Item.Description>
+                    <Item.Meta>
+                        by { spotifyPlaylist.owner.display_name}
+                    </Item.Meta>
+                    <Item.Extra>
+                        <Label><Icon name='music' />{ spotifyPlaylist.tracks.total } track(s)</Label>
+                    </Item.Extra>
+                </Item.Content>
             )
         }
     }
 
+    if (error) {
+        return <div>Error: {error.message}</div>;
+    } else {
+        return (
+            <Item>
+                { renderSpotifyPlaylistDetailsImage() }
+                { renderSpotifyPlaylistDetailsContent() }
+                <Segment basic floated='right' textAlign='right'>
+                    <Checkbox 
+                        toggle
+                        checked={ checked }
+                        onChange={ (event,data) => { onToggleActive( data.checked); } }
+                        ref={ ref }
+                        getSpotifyPlaylist={ getSpotifyPlaylist }
+                    />
+                    <br />
+                    <Button
+                        title='Remove this Playlist'
+                        icon
+                        size='small'
+                        basic
+                        color='red'
+                        onClick={ removePlaylist }
+                    ><Icon name='times circle' /></Button>
+                </Segment>
+            </Item>
+        )
+    }
 });
 
 export default PlaylistSelectionItem;
