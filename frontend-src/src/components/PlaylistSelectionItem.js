@@ -75,7 +75,7 @@ const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist}, ref) =
                 <Item>
                     <Item.Image size='tiny' src={ spotifyPlaylist.images[0].url } />
                     <Item.Content>
-                        <Item.Header as='a' href={spotifyPlaylist.external_urls.spotify} target='_blank'>{ spotifyPlaylist.name }</Item.Header>
+                        <Item.Header as='a' href={spotifyPlaylist.uri} target='_blank'>{ spotifyPlaylist.name }</Item.Header>
                         <Item.Description>{ spotifyPlaylist.description }</Item.Description>
                         <Item.Meta>
                             by { spotifyPlaylist.owner.display_name}
