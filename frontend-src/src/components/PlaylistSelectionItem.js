@@ -1,5 +1,5 @@
 import React, { forwardRef, useContext, useState, useEffect } from "react";
-import { Button, Checkbox, Icon, Item, Label, Loader, Segment } from 'semantic-ui-react';
+import { Button, Checkbox, Icon, Item, Label, Loader, Popup, Segment } from 'semantic-ui-react';
 
 import { getPlaylist, deletePlaylist, setPlaylistActive } from '../api';
 import { updateActivePlaylists } from '../utils/playlists';
@@ -72,6 +72,11 @@ const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist}, ref) =
         }
     }
 
+    const renderDescriptionPopover = () => {
+        if (spotifyPlaylist && spotifyPlaylist.description)
+            return <Popup content={ spotifyPlaylist.description } trigger={<Button icon='info' size='mini' />} />
+    }
+
     const renderSpotifyPlaylistDetailsContent = () => {
         if (!isLoaded)
             return  <Item.Content><Loader active /></Item.Content>;
@@ -79,7 +84,6 @@ const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist}, ref) =
             return (
                 <Item.Content>
                     <Item.Header as='a' href={spotifyPlaylist.uri} target='_blank'>{ spotifyPlaylist.name }</Item.Header>
-                    <Item.Description>{ spotifyPlaylist.description }</Item.Description>
                     <Item.Meta>
                         by { spotifyPlaylist.owner.display_name}
                     </Item.Meta>
@@ -99,14 +103,7 @@ const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist}, ref) =
                 { renderSpotifyPlaylistDetailsImage() }
                 { renderSpotifyPlaylistDetailsContent() }
                 <Segment basic floated='right' textAlign='right'>
-                    <Checkbox 
-                        toggle
-                        checked={ checked }
-                        onChange={ (event,data) => { onToggleActive( data.checked); } }
-                        ref={ ref }
-                        getSpotifyPlaylist={ getSpotifyPlaylist }
-                    />
-                    <br />
+                    { renderDescriptionPopover() } 
                     <Button
                         title='Remove this Playlist'
                         icon
@@ -115,6 +112,13 @@ const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist}, ref) =
                         color='red'
                         onClick={ removePlaylist }
                     ><Icon name='times circle' /></Button>
+                    <Checkbox 
+                        toggle
+                        checked={ checked }
+                        onChange={ (event,data) => { onToggleActive( data.checked); } }
+                        ref={ ref }
+                        getSpotifyPlaylist={ getSpotifyPlaylist }
+                    />
                 </Segment>
             </Item>
         )
