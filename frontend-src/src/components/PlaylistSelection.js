@@ -17,8 +17,7 @@ import {
 function PlaylistSelection() {
     
     const { 
-        // playlists,
-        // setPlaylists,
+        playlists,
         playlistsError,
         setPlaylistsError,
         playlistsLoaded,
@@ -27,7 +26,7 @@ function PlaylistSelection() {
         playlistRefs
     } = useContext(AppContext);
 
-    const playlists = useRef([]);
+    
 
     const reloadPlaylists = () => {
         getPlaylists()

@@ -13,13 +13,13 @@ function CurrentlyPlaying() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [playingItem, setPlayingItem] = useState(null);
     
-    const { setPlaylists, setPlaylistsLoaded } = useContext(AppContext);
+    const { playlists, setPlaylistsLoaded } = useContext(AppContext);
    
     const reloadPlaylists = () => {
         getPlaylists()
         .then(
             (result) => {
-                setPlaylists(result.data);
+                playlists.current = result.data;
                 setPlaylistsLoaded(true);
             },
             (playlistsError) => {

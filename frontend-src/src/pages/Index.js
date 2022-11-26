@@ -7,7 +7,7 @@ import PlaylistSelection from '../components/PlaylistSelection';
 import User from '../components/User';
 
 function Index() {
-  const [playlists, setPlaylists] = useState([]);
+  const playlists = useRef([]);
   const [playlistsError, setPlaylistsError] = useState(null);
   const [playlistsLoaded, setPlaylistsLoaded] = useState(false);
   const activePlaylists = useRef([]);
@@ -17,7 +17,6 @@ function Index() {
     <AppContext.Provider value={
       {
         playlists,
-        setPlaylists,
         playlistsError,
         setPlaylistsError,
         playlistsLoaded,
