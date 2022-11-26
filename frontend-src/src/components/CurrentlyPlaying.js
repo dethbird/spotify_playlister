@@ -4,7 +4,7 @@ import { Button, Item, Loader, Segment } from 'semantic-ui-react'
 
 import { AppContext } from '../contexts/AppContext';
 import { CurrentlyPlayingContext } from '../contexts/CurrentlyPlayingContext';
-import { addToPlaylists, getPlaylists, getCurrentlyPlaying, removeFromPlaylists } from '../api';
+import { addToPlaylists, getCurrentlyPlaying, removeFromPlaylists } from '../api';
 import CurrentlyPlayingPlaybackControls from './CurrentlyPlayingPlaybackControls';
 import LikeButton from '../components/LikeButton';
 
@@ -13,19 +13,12 @@ function CurrentlyPlaying() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [playingItem, setPlayingItem] = useState(null);
     
-    const { playlists, setPlaylistsLoaded } = useContext(AppContext);
+    const { playlistRefs, activePlaylists } = useContext(AppContext);
    
     const reloadPlaylists = () => {
-        getPlaylists()
-        .then(
-            (result) => {
-                playlists.current = result.data;
-                setPlaylistsLoaded(true);
-            },
-            (playlistsError) => {
-                setError(playlistsError);
-            }
-        )
+        for(const id in activePlaylists.current) {
+            playlistRefs.current[activePlaylists.current[id]].props.getSpotifyPlaylist()
+        }
     }
 
     useEffect(() => {
@@ -53,7 +46,6 @@ function CurrentlyPlaying() {
         addToPlaylists(playingItem.item.uri)
             .then(
                 () => {
-                    setPlaylistsLoaded(false);
                     setTimeout(reloadPlaylists, 100);
                     toast.success('Track added')
                 },
@@ -68,7 +60,6 @@ function CurrentlyPlaying() {
         removeFromPlaylists(playingItem.item.uri)
             .then(
                 () => {
-                    setPlaylistsLoaded(false);
                     setTimeout(reloadPlaylists, 100);
                     toast.error('Track removed')
                 },

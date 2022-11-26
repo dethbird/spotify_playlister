@@ -90,6 +90,7 @@ const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist}, ref) =
                             checked={ checked }
                             onChange={ (event,data) => { onToggleActive( data.checked); } }
                             ref={ ref }
+                            getSpotifyPlaylist={ getSpotifyPlaylist }
                         />
                         <br />
                         <Button

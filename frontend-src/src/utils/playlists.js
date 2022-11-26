@@ -36,7 +36,6 @@ export const updatePlaylistsSetCurrentlyActive = (playlists, current) => {
 
 export const updatePlaylistsCheckedUI = (refs, playlists) => {
     for (const i in playlists) {
-        // console.log(refs[parseInt(playlists[i].id)]);
         refs[parseInt(playlists[i].id)].state.checked = playlists[i].active === 'Y' ? true : false
         refs[parseInt(playlists[i].id)].inputRef.current.checked = playlists[i].active === 'Y' ? true : false
     }
