@@ -71,7 +71,7 @@ function CurrentlyPlayingPlaybackControls() {
     }
 
     return (
-        <Button.Group icon>
+        <Button.Group icon size='huge'>
             <Button onClick={ previousTrack }>
                 <Icon name='step backward' />
             </Button>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Icon, Loader } from 'semantic-ui-react'
+import { Button, Loader } from 'semantic-ui-react'
 
 import { like, unlike, liked } from '../api';
 
@@ -64,12 +64,7 @@ function LikeButton(props) {
     } else {
         if (likedResponse.length) {
             return (
-                <Icon 
-                    color={likedResponse[0] ? 'pink' : 'grey'}
-                    name='like'
-                    onClick={ toggleLiked }
-                    title='Like / Unlike'
-                />
+                <Button basic color={likedResponse[0] ? 'pink' : 'grey'} icon='like' title='Like / Unlike' onClick={ toggleLiked } />
             );
         }
     }

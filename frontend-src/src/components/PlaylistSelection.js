@@ -114,7 +114,7 @@ function PlaylistSelection() {
 
     return (
       <div className='playlist-selection'>
-        <Button.Group>
+        <Button.Group size='huge'>
             <AddPlaylistModal onAddPlaylist={ onAddPlaylist } />
             <Button basic color='grey' icon='check square' title='Select All' onClick={ () => { setPlaylistsActiveAll('Y')}} />
             <Button basic color='grey' icon='check square outline' title='Select None' onClick={ () => { setPlaylistsActiveAll('N')}} />

@@ -93,8 +93,9 @@ function CurrentlyPlaying() {
                                     </Item.Meta>
                                     <Item.Description>{ playingItem.item.artists[0].name }</Item.Description>
                                     <Item.Extra>
-                                        <LikeButton trackId={ playingItem.item.id } />
-                                        <Button.Group>
+                                        
+                                        <Button.Group size='huge'>
+                                            <LikeButton trackId={ playingItem.item.id } />
                                             <Button basic color='green' icon='plus circle' title='Add to Selected Playlists' onClick={ addTrackToPlaylists } />
                                             <Button basic color='red' icon='times circle' title='Remove from Selected Playlists' onClick={ removeTrackFromPlaylists } />
                                             <Button basic color='blue' icon='sync' title="Show Me What's Playing" onClick={ getCurrentlyPlayingTrack }/>
@@ -113,7 +114,7 @@ function CurrentlyPlaying() {
 
         return <Segment textAlign='center' compact>
             Nothing's playing. Play something in Spotify then click the button below:<br />
-            <Button basic color='blue' icon='sync' title="Show Me What's Playing" onClick={getCurrentlyPlayingTrack} />
+            <Button basic color='blue' icon='sync' title="Show Me What's Playing" onClick={getCurrentlyPlayingTrack} size='huge'/>
         </Segment>
         
     }

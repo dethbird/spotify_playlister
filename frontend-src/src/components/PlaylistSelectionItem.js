@@ -107,7 +107,7 @@ const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist}, ref) =
                     <Button
                         title='Remove this Playlist'
                         icon
-                        size='small'
+                        size='mini'
                         basic
                         color='red'
                         onClick={ removePlaylist }
