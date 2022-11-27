@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef } from "react";
-import { Button, Icon, Item, Loader } from 'semantic-ui-react';
+import { Button, Grid, Icon, Segment, Loader } from 'semantic-ui-react';
 
 import { getPlaylists, setActiveAll, setActiveInverse } from '../api';
 import { AppContext } from '../contexts/AppContext';
@@ -94,14 +94,16 @@ function PlaylistSelection() {
         } else {
             if (playlists.current.length) {
                 return playlists.current.map((playlist) => (
-                    <PlaylistSelectionItem 
-                        playlist={ playlist }
-                        onRemovePlaylist= { onRemovePlaylist }
-                        ref={(element) => {
-                            playlistRefs.current[parseInt(playlist.id)] = element;
-                        }}
-                        key={parseInt(playlist.id)}
-                    />
+                    <Grid.Column>
+                        <PlaylistSelectionItem 
+                            playlist={ playlist }
+                            onRemovePlaylist= { onRemovePlaylist }
+                            ref={(element) => {
+                                playlistRefs.current[parseInt(playlist.id)] = element;
+                            }}
+                            key={parseInt(playlist.id)}
+                        />
+                    </Grid.Column>
                     
                 ));
             } else {
@@ -114,13 +116,18 @@ function PlaylistSelection() {
 
     return (
       <div className='playlist-selection'>
-        <Button.Group size='huge'>
-            <AddPlaylistModal onAddPlaylist={ onAddPlaylist } />
-            <Button basic color='grey' icon='check square' title='Select All' onClick={ () => { setPlaylistsActiveAll('Y')}} />
-            <Button basic color='grey' icon='check square outline' title='Select None' onClick={ () => { setPlaylistsActiveAll('N')}} />
-            <Button basic color='grey' icon='exchange' title='Invert Selection' onClick={ setPlaylistsActiveInverse } />
-        </Button.Group>
-        <Item.Group divided link>{ renderPlaylists() }</Item.Group>
+        <Segment basic textAlign='center'>
+            <Button.Group size='huge'>
+                <AddPlaylistModal onAddPlaylist={ onAddPlaylist } />
+                <Button basic color='grey' icon='check square' title='Select All' onClick={ () => { setPlaylistsActiveAll('Y')}} />
+                <Button basic color='grey' icon='check square outline' title='Select None' onClick={ () => { setPlaylistsActiveAll('N')}} />
+                <Button basic color='grey' icon='exchange' title='Invert Selection' onClick={ setPlaylistsActiveInverse } />
+            </Button.Group>
+        </Segment>
+        {/* <Item.Group divided link>{ renderPlaylists() }</Item.Group> */}
+        <Grid doubling columns={4}>
+            { renderPlaylists() }
+        </Grid>
       </div>
     );
   }

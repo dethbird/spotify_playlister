@@ -1,5 +1,5 @@
 import React, { forwardRef, useContext, useState, useEffect } from "react";
-import { Button, Checkbox, Icon, Item, Label, Loader, Popup, Segment } from 'semantic-ui-react';
+import { Button, Card, Checkbox, Grid, Icon, Image, Loader, Popup, Segment } from 'semantic-ui-react';
 
 import { getPlaylist, deletePlaylist, setPlaylistActive } from '../api';
 import { updateActivePlaylists } from '../utils/playlists';
@@ -68,7 +68,7 @@ const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist}, ref) =
 
     const renderSpotifyPlaylistDetailsImage = () => {
         if (spotifyPlaylist) {
-            return <Item.Image size='tiny' src={ spotifyPlaylist.images[0].url } />
+            return <Image src={ spotifyPlaylist.images[0].url } wrapped ui={false} />
         }
     }
 
@@ -79,48 +79,64 @@ const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist}, ref) =
 
     const renderSpotifyPlaylistDetailsContent = () => {
         if (!isLoaded)
-            return  <Item.Content><Loader active /></Item.Content>;
+            return  <Card.Content><Loader active /></Card.Content>;
         if (spotifyPlaylist) {
             return (
-                <Item.Content>
-                    <Item.Header as='a' href={spotifyPlaylist.uri} target='_blank'>{ spotifyPlaylist.name }</Item.Header>
-                    <Item.Meta>
+                <Card.Content>
+                    <Card.Header as='a' href={spotifyPlaylist.uri} target='_blank'>{ spotifyPlaylist.name }</Card.Header>
+                    <Card.Meta>
                         by { spotifyPlaylist.owner.display_name}
-                    </Item.Meta>
-                    <Item.Extra>
-                        <Label><Icon name='music' />{ spotifyPlaylist.tracks.total } track(s)</Label>
-                    </Item.Extra>
-                </Item.Content>
+                    </Card.Meta>
+                    <Card.Description>
+                        <Icon name='music' /> { spotifyPlaylist.tracks.total } track(s)
+                    </Card.Description>
+                </Card.Content>
             )
         }
+    }
+
+    const renderSpotifyPlaylistButtons = () => {
+        return (
+            <Card.Content extra>
+                <Grid relaxed columns={3}>
+                    <Grid.Column>
+                        { renderDescriptionPopover() } 
+                    </Grid.Column>
+                    <Grid.Column>
+                        <Button
+                            title='Remove this Playlist'
+                            icon
+                            size='mini'
+                            basic
+                            color='red'
+                            onClick={ removePlaylist }
+                        >
+                            <Icon name='times circle' />
+                        </Button>
+                    </Grid.Column>
+                    <Grid.Column>
+                        <Checkbox 
+                            toggle
+                            checked={ checked }
+                            onChange={ (event,data) => { onToggleActive( data.checked); } }
+                            ref={ ref }
+                            getSpotifyPlaylist={ getSpotifyPlaylist }
+                        />
+                    </Grid.Column>
+                </Grid>
+            </Card.Content>
+        )
     }
 
     if (error) {
         return <div>Error: {error.message}</div>;
     } else {
         return (
-            <Item>
-                { renderSpotifyPlaylistDetailsImage() }
-                { renderSpotifyPlaylistDetailsContent() }
-                <Segment basic floated='right' textAlign='right'>
-                    { renderDescriptionPopover() } 
-                    <Button
-                        title='Remove this Playlist'
-                        icon
-                        size='mini'
-                        basic
-                        color='red'
-                        onClick={ removePlaylist }
-                    ><Icon name='times circle' /></Button>
-                    <Checkbox 
-                        toggle
-                        checked={ checked }
-                        onChange={ (event,data) => { onToggleActive( data.checked); } }
-                        ref={ ref }
-                        getSpotifyPlaylist={ getSpotifyPlaylist }
-                    />
-                </Segment>
-            </Item>
+        <Card>
+            { renderSpotifyPlaylistDetailsImage() }
+            { renderSpotifyPlaylistDetailsContent() }
+            { renderSpotifyPlaylistButtons() }
+        </Card>
         )
     }
 });
