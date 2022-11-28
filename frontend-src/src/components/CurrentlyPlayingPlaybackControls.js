@@ -1,12 +1,12 @@
 import React, { useContext } from "react";
 import { Button, Icon } from 'semantic-ui-react'
 
-import { CurrentlyPlayingContext } from '../contexts/CurrentlyPlayingContext';
+import { AppContext } from "../contexts/AppContext";
 import { next, previous, pause, play, getCurrentlyPlaying } from '../api';
 
 function CurrentlyPlayingPlaybackControls() {
 
-    const { setPlayingItem, playingItem } = useContext(CurrentlyPlayingContext);
+    const { playingItem, setPlayingItem } = useContext(AppContext);
 
     const nextTrack = () => {
         next()
