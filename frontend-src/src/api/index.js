@@ -52,6 +52,20 @@ export const removeFromPlaylists = (track_uri) => {
     })
 }
 
+// Add track to playlist
+export const addToPlaylist = (track_uri, playlistId) => {
+    return axios.put(`/api/app/playlist/${playlistId}/addtrack`, {
+        trackUri: track_uri
+    })
+}
+
+// Remove track from playlist
+export const removeFromPlaylist = (track_uri, playlistId) => {
+    return axios.patch(`/api/app/playlist/${playlistId}/removetrack`, {
+        trackUri: track_uri
+    })
+}
+
 /** Spotify endpoints ----------------------------- */
 
 // Get playlist

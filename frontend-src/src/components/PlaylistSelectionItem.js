@@ -1,7 +1,9 @@
 import React, { forwardRef, useContext, useState, useEffect } from "react";
-import { Button, Card, Checkbox, Grid, Icon, Image, Loader, Popup, Segment } from 'semantic-ui-react';
+import { toast } from 'react-toastify';
+import { Button, Card, Checkbox, Grid, Icon, Image, Loader, Popup } from 'semantic-ui-react';
 
-import { getPlaylist, deletePlaylist, setPlaylistActive } from '../api';
+
+import { addToPlaylist, removeFromPlaylist, getPlaylist, deletePlaylist, setPlaylistActive } from '../api';
 import { updateActivePlaylists } from '../utils/playlists';
 import { AppContext } from '../contexts/AppContext';
 
@@ -9,7 +11,8 @@ import { AppContext } from '../contexts/AppContext';
 const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist}, ref) => {
 
     const { 
-        activePlaylists
+        activePlaylists,
+        playingItem
     } = useContext(AppContext);
 
     const [error, setError] = useState(null);
@@ -65,6 +68,33 @@ const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist}, ref) =
         )
     }
 
+    const addTrackToPlaylist = () => {
+        addToPlaylist(playingItem.item.uri, playlist.id)
+            .then(
+                () => {
+                    getSpotifyPlaylist();
+                    toast.success('Track added')
+                },
+                (error) => {
+                    setIsLoaded(true);
+                    setError(error);
+                }
+            )
+    }
+
+    const removeTrackFromPlaylist = () => {
+        removeFromPlaylist(playingItem.item.uri, playlist.id)
+            .then(
+                () => {
+                    getSpotifyPlaylist();
+                    toast.error('Track removed')
+                },
+                (error) => {
+                    setIsLoaded(true);
+                    setError(error);
+                }
+            )
+    }
 
     const renderSpotifyPlaylistDetailsImage = () => {
         if (spotifyPlaylist) {
@@ -99,10 +129,10 @@ const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist}, ref) =
         return (
             <Card.Content extra>
                 <Grid relaxed columns={3}>
-                    <Grid.Column>
+                    <Grid.Column textAlign='center'>
                         { renderDescriptionPopover() } 
                     </Grid.Column>
-                    <Grid.Column>
+                    <Grid.Column textAlign='center'>
                         <Button
                             title='Remove this Playlist'
                             icon
@@ -114,7 +144,7 @@ const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist}, ref) =
                             <Icon name='times circle' />
                         </Button>
                     </Grid.Column>
-                    <Grid.Column>
+                    <Grid.Column textAlign='center'>
                         <Checkbox 
                             toggle
                             checked={ checked }
@@ -122,6 +152,14 @@ const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist}, ref) =
                             ref={ ref }
                             getSpotifyPlaylist={ getSpotifyPlaylist }
                         />
+                    </Grid.Column>
+                </Grid>
+                <Grid relaxed columns={2}>
+                    <Grid.Column textAlign='center'>
+                        <Button basic color='green' icon='plus circle' disabled={ playingItem ? false : true } title='Add to Selected Playlists' onClick={ addTrackToPlaylist } />
+                    </Grid.Column>
+                    <Grid.Column textAlign='center'>
+                        <Button basic color='red' icon='times circle' disabled={ playingItem ? false : true } title='Remove from Selected Playlists' onClick={ removeTrackFromPlaylist } />
                     </Grid.Column>
                 </Grid>
             </Card.Content>

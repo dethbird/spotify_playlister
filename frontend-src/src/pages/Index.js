@@ -12,6 +12,7 @@ function Index() {
   const [playlistsLoaded, setPlaylistsLoaded] = useState(false);
   const activePlaylists = useRef([]);
   const playlistRefs = useRef([]);
+  const [playingItem, setPlayingItem] = useState(null);
 
   return (
     <AppContext.Provider value={
@@ -22,7 +23,9 @@ function Index() {
         playlistsLoaded,
         setPlaylistsLoaded,
         activePlaylists,
-        playlistRefs
+        playlistRefs,
+        playingItem,
+        setPlayingItem
       }
     }>
       <Container>

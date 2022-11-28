@@ -265,7 +265,7 @@ $app->group('/api', function (RouteCollectorProxy $group) use ($spotifyApi, $app
                     $spotifyApi->deletePlaylistTracks($playlist->spotify_playlist_id, $tracks);
                 }
                 return $response->withHeader('Content-type', 'application/json');
-            })->setName('userPlaylistsAddTrack');
+            })->setName('userPlaylistsRemoveTrack');
         });
         $group->put('/playlist', function (Request $request, Response $response, $args) use ($app) {
             $payload = json_decode($request->getBody()->getContents());
@@ -290,7 +290,7 @@ $app->group('/api', function (RouteCollectorProxy $group) use ($spotifyApi, $app
             $response->getBody()->write(json_encode($playlist));
             return $response->withHeader('Content-type', 'application/json');
         })->setName('addUserPlaylist');
-        $group->group('/playlist/{id}', function (RouteCollectorProxy $group) use ($app) {
+        $group->group('/playlist/{id}', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
             $group->patch('/active', function (Request $request, Response $response, $args) use ($app) {
                 $payload = json_decode($request->getBody()->getContents());
                 $playlist = R::loadForUpdate('playlist', $args['id']);
@@ -299,10 +299,38 @@ $app->group('/api', function (RouteCollectorProxy $group) use ($spotifyApi, $app
                 $response->getBody()->write(json_encode($playlist));
                 return $response->withHeader('Content-type', 'application/json');
             })->setName('userPlaylistActive');
+            $group->put('/addtrack', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
+                    $payload = json_decode($request->getBody()->getContents());
+                    $playlists = R::find('playlist', ' user_id = ? AND id = ?', [ $_SESSION['USER_ID'], $args['id'] ]);
+                    $tracks = [
+                        'tracks' => [
+                            ['uri' => $payload->trackUri]
+                        ],
+                    ];
+                    foreach ($playlists as $playlist) {
+                        $spotifyApi->deletePlaylistTracks($playlist->spotify_playlist_id, $tracks);
+                        $spotifyApi->addPlaylistTracks($playlist->spotify_playlist_id, [
+                            $payload->trackUri
+                        ]);
+                    }
+                    return $response->withHeader('Content-type', 'application/json');
+                })->setName('userPlaylistAddTrack');
+            $group->patch('/removetrack', function (Request $request, Response $response, $args) use ($spotifyApi, $app) {
+                $payload = json_decode($request->getBody()->getContents());
+                $playlists = R::find('playlist', ' user_id = ? AND id = ?', [ $_SESSION['USER_ID'], $args['id'] ]);
+                $tracks = [
+                    'tracks' => [
+                        ['uri' => $payload->trackUri]
+                    ],
+                ];
+                foreach ($playlists as $playlist) {
+                    $spotifyApi->deletePlaylistTracks($playlist->spotify_playlist_id, $tracks);
+                }
+                return $response->withHeader('Content-type', 'application/json');
+            })->setName('userPlaylistRemoveTrack');
         });
     });
 });
-
 
 
 $app->run();

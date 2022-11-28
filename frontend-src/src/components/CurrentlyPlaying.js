@@ -11,9 +11,8 @@ import LikeButton from '../components/LikeButton';
 function CurrentlyPlaying() {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
-    const [playingItem, setPlayingItem] = useState(null);
     
-    const { playlistRefs, activePlaylists } = useContext(AppContext);
+    const { playlistRefs, activePlaylists, playingItem, setPlayingItem } = useContext(AppContext);
    
     const reloadPlaylists = () => {
         for(const id in activePlaylists.current) {
