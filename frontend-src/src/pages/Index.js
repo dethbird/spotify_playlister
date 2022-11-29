@@ -29,14 +29,8 @@ function Index() {
       }
     }>
       <Container>
-        <Grid>
-          <Grid.Column floated='left' width={12}>
-            <CurrentlyPlaying />
-          </Grid.Column>
-          <Grid.Column floated='right' textAlign='right' width={4}>
-            <User />
-          </Grid.Column>
-        </Grid>
+        <User />
+        <CurrentlyPlaying />
         <PlaylistSelection />
       </Container>
     </AppContext.Provider>
