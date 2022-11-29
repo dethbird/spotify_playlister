@@ -66,6 +66,20 @@ export const removeFromPlaylist = (track_uri, playlistId) => {
     })
 }
 
+// Favorite / unfavorite spotify playlist
+export const favorite = (spotifyPlaylistId, favorite) => {
+    return axios.put(`/api/app/playlist/favorite/${spotifyPlaylistId}`, {
+        favorite
+    })
+}
+
+// is spotify playlist favorited
+export const favorited = (spotifyPlaylistId) => {
+    return axios.get(`/api/app/playlist/favorited/${spotifyPlaylistId}`)
+}
+
+ 
+
 /** Spotify endpoints ----------------------------- */
 
 // Get playlist

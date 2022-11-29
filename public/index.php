@@ -213,8 +213,7 @@ $app->group('/api', function (RouteCollectorProxy $group) use ($spotifyApi, $app
     });
     $group->group('/app', function (RouteCollectorProxy $group) use ($spotifyApi, $app) {
         $group->get('/playlists', function (Request $request, Response $response, $args) use ($app) {
-            $playlists = array_values(R::find(
-                'playlist', ' user_id = ?', [ $_SESSION['USER_ID'] ] ));
+            $playlists = array_values(R::getAll('SELECT p.*, IF(f.id, true, NULL) as is_favorited FROM playlist p LEFT JOIN favorite f ON p.spotify_playlist_id = f.spotify_playlist_id'));
             $response->getBody()->write(json_encode($playlists));
             return $response->withHeader('Content-type', 'application/json');
         })->setName('userPlaylists');
@@ -284,6 +283,37 @@ $app->group('/api', function (RouteCollectorProxy $group) use ($spotifyApi, $app
             $response->getBody()->write(json_encode($playlist));
             return $response->withHeader('Content-type', 'application/json');
         })->setName('addUserPlaylist');
+        $group->get('/playlist/favorited/{spotify_playlist_id}', function (Request $request, Response $response, $args) use ($app) {
+            $favorite = null;
+            $favorites = array_values(R::find(
+                'favorite', ' spotify_playlist_id = ? LIMIT 1', [ $args['spotify_playlist_id'] ] ));
+            if (count($favorites)>0) {
+                $favorite = $favorites[0];
+            }
+            $response->getBody()->write(json_encode($favorite));
+            return $response->withHeader('Content-type', 'application/json');
+        })->setName('userPlaylistFavorited');
+        $group->put('/playlist/favorite/{spotify_playlist_id}', function (Request $request, Response $response, $args) use ($app) {
+            $payload = json_decode($request->getBody()->getContents());
+            $favorites = R::find(
+                'favorite', ' spotify_playlist_id = ? LIMIT 1', [ $args['spotify_playlist_id'] ] );
+            if (count($favorites)>0) {
+                $favorite = array_pop($favorites);
+                if ($payload->favorite !== true){
+                    R::trash($favorite);
+                }
+            } else {
+                if ($payload->favorite == true) {
+                    $user_favorite = R::dispense( 'favorite' );
+                    $user_favorite->spotify_playlist_id = $args['spotify_playlist_id'];
+                    $user_favorite->user_id = $_SESSION['USER_ID'];
+                    $new_favorite_id = R::store( $user_favorite );
+                    $favorite = R::load('favorite', $new_favorite_id);
+                }
+            }
+            $response->getBody()->write(json_encode($favorite));
+            return $response->withHeader('Content-type', 'application/json');
+        })->setName('userPlaylistFavorited');
         $group->delete('/playlist/{id}', function (Request $request, Response $response, $args) use ($app) {
             $playlist = R::load( 'playlist', $args['id'] );
             R::trash( $playlist );

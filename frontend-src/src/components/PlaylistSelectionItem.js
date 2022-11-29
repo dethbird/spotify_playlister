@@ -4,11 +4,12 @@ import { Button, Card, Checkbox, Grid, Icon, Image, Loader, Popup } from 'semant
 
 
 import { addToPlaylist, removeFromPlaylist, getPlaylist, deletePlaylist, setPlaylistActive } from '../api';
+import PlaylistFavoriteButton from "./PlaylistFavoriteButton";
 import { updateActivePlaylists } from '../utils/playlists';
 import { AppContext } from '../contexts/AppContext';
 
 
-const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist}, ref) => {
+const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist }, ref) => {
 
     const { 
         activePlaylists,
@@ -101,8 +102,8 @@ const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist}, ref) =
     }
 
     const renderDescriptionPopover = () => {
-        if (spotifyPlaylist && spotifyPlaylist.description)
-            return <Popup content={ spotifyPlaylist.description } trigger={<Button icon='info' size='mini' />} />
+        if (spotifyPlaylist)
+            return <Popup content={ spotifyPlaylist.description } trigger={<Button icon='info' size='mini' disabled={ spotifyPlaylist.description ? false : true } />} />
     }
 
     const renderSpotifyPlaylistDetailsContent = () => {
@@ -123,14 +124,21 @@ const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist}, ref) =
         }
     }
 
+    const renderFavoriteButton = () => {
+        return <PlaylistFavoriteButton spotifyPlaylistId={ playlist.spotify_playlist_id } />
+    }
+
     const renderSpotifyPlaylistButtons = () => {
         return (
             <Card.Content extra>
-                <Grid relaxed columns={3}>
-                    <Grid.Column textAlign='center'>
+                <Grid relaxed>
+                    <Grid.Column textAlign='center' width={ 3 }>
+                        { renderFavoriteButton() } 
+                    </Grid.Column>
+                    <Grid.Column textAlign='center' width={ 3 }>
                         { renderDescriptionPopover() } 
                     </Grid.Column>
-                    <Grid.Column textAlign='center'>
+                    <Grid.Column textAlign='center' width={ 3 }>
                         <Button
                             title='Remove this Playlist'
                             icon
@@ -142,7 +150,7 @@ const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist}, ref) =
                             <Icon name='times circle' />
                         </Button>
                     </Grid.Column>
-                    <Grid.Column textAlign='center'>
+                    <Grid.Column textAlign='center' width={ 7 }>
                         <Checkbox 
                             toggle
                             checked={ activePlaylists.current.includes(parseInt(playlist.id)) }
@@ -154,10 +162,10 @@ const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist}, ref) =
                 </Grid>
                 <Grid relaxed columns={2}>
                     <Grid.Column textAlign='center'>
-                        <Button basic color='green' icon='plus circle' disabled={ playingItem ? false : true } title='Add to Selected Playlists' onClick={ addTrackToPlaylist } />
+                        <Button basic color='green' icon='plus circle' fluid disabled={ playingItem ? false : true } title='Add to Selected Playlists' onClick={ addTrackToPlaylist } />
                     </Grid.Column>
                     <Grid.Column textAlign='center'>
-                        <Button basic color='red' icon='times circle' disabled={ playingItem ? false : true } title='Remove from Selected Playlists' onClick={ removeTrackFromPlaylist } />
+                        <Button basic color='red' icon='times circle' fluid disabled={ playingItem ? false : true } title='Remove from Selected Playlists' onClick={ removeTrackFromPlaylist } />
                     </Grid.Column>
                 </Grid>
             </Card.Content>
