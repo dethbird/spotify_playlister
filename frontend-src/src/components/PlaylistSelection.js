@@ -4,6 +4,7 @@ import { Button, Grid, Icon, Segment, Loader } from 'semantic-ui-react';
 import { getPlaylists, setActiveAll, setActiveInverse } from '../api';
 import { AppContext } from '../contexts/AppContext';
 import AddPlaylistModal from './AddPlaylistModal';
+import AddFavoritePlaylistModal from "./AddFavoritePlaylistModal";
 import PlaylistSelectionItem from './PlaylistSelectionItem';
 import { 
     extractActivePlaylistIds,
@@ -118,13 +119,13 @@ function PlaylistSelection() {
       <div className='playlist-selection'>
         <Segment basic textAlign='center'>
             <Button.Group size='huge'>
+                <AddFavoritePlaylistModal onAddPlaylist={ onAddPlaylist } />
                 <AddPlaylistModal onAddPlaylist={ onAddPlaylist } />
                 <Button basic color='grey' icon='check square' title='Select All' onClick={ () => { setPlaylistsActiveAll('Y')}} />
                 <Button basic color='grey' icon='check square outline' title='Select None' onClick={ () => { setPlaylistsActiveAll('N')}} />
                 <Button basic color='grey' icon='exchange' title='Invert Selection' onClick={ setPlaylistsActiveInverse } />
             </Button.Group>
         </Segment>
-        {/* <Item.Group divided link>{ renderPlaylists() }</Item.Group> */}
         <Grid doubling columns={4}>
             { renderPlaylists() }
         </Grid>

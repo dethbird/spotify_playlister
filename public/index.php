@@ -59,6 +59,18 @@ function performLogout() {
     unset($_SESSION['SPOTIFY_USER_ID']);
 }
 
+$spotifyPlaylistFields = [
+    'name',
+    'id',
+    'description',
+    'owner(display_name, external_urls(spotify))',
+    'tracks(total,items(track.id))',
+    'images',
+    'external_urls(spotify)',
+    'snapshot_id',
+    'uri'
+];
+
 # ROUTES
 
 # callback
@@ -200,7 +212,7 @@ $app->group('/api', function (RouteCollectorProxy $group) use ($spotifyApi, $app
                         'id',
                         'description',
                         'owner(display_name, external_urls(spotify))',
-                        'tracks(total,items(track.id))',
+                        'tracks(total)',
                         'images',
                         'external_urls(spotify)',
                         'snapshot_id',
@@ -283,6 +295,26 @@ $app->group('/api', function (RouteCollectorProxy $group) use ($spotifyApi, $app
             $response->getBody()->write(json_encode($playlist));
             return $response->withHeader('Content-type', 'application/json');
         })->setName('addUserPlaylist');
+        $group->get('/playlist/favorites', function (Request $request, Response $response, $args) use ($app, $spotifyApi) {
+            $favorite = null;
+            $favorites = json_decode(json_encode(array_values(R::find(
+                'favorite', ' user_id = ?', [ $_SESSION['USER_ID'] ] ))));
+            foreach($favorites as $favorite) {
+                $favorite->spotify_playlist = $spotifyApi->getPlaylist($favorite->spotify_playlist_id, ['fields' => [
+                    'name',
+                    'id',
+                    'description',
+                    'owner(display_name, external_urls(spotify))',
+                    'tracks(total)',
+                    'images',
+                    'external_urls(spotify)',
+                    'snapshot_id',
+                    'uri'
+                ]]);
+            }
+            $response->getBody()->write(json_encode($favorites));
+            return $response->withHeader('Content-type', 'application/json');
+        })->setName('userPlaylistFavorites');
         $group->get('/playlist/favorited/{spotify_playlist_id}', function (Request $request, Response $response, $args) use ($app) {
             $favorite = null;
             $favorites = array_values(R::find(

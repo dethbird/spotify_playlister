@@ -78,6 +78,11 @@ export const favorited = (spotifyPlaylistId) => {
     return axios.get(`/api/app/playlist/favorited/${spotifyPlaylistId}`)
 }
 
+// get favorited playlists
+export const favorites = () => {
+    return axios.get(`/api/app/playlist/favorites`)
+}
+
  
 
 /** Spotify endpoints ----------------------------- */

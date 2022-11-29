@@ -92,7 +92,7 @@ function AddPlaylistModal(props) {
                 }
             }
             open={open}
-            trigger={<Button basic color='green' icon='plus' title='Add Playlist' />}
+            trigger={<Button basic color='grey' icon='plus' title='Add Playlist' />}
         >
             <Modal.Header>Select a Playlist</Modal.Header>
             <Modal.Content>
