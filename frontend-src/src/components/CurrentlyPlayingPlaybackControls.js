@@ -60,9 +60,9 @@ function CurrentlyPlayingPlaybackControls() {
             .then(
                 (result) => {
                     setPlayingItem(result.data);
-                    // if(result.data.is_playing === true) {
-                    //     setTimeout(getCurrentlyPlayingTrack, 1000);
-                    // }
+                    if(result.data && result.data.is_playing === true) {
+                        setTimeout(getCurrentlyPlayingTrack, result.data.item.duration_ms - result.data.progress_ms + 100);
+                    }
                 },
                 (error) => {
                     console.log(error)
