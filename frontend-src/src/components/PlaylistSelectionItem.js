@@ -18,6 +18,7 @@ const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist }, ref) 
 
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [isChecked, setIsChecked] = useState(activePlaylists.current.includes(parseInt(playlist.id)));
     const [spotifyPlaylist, setSpotifyPlaylist] = useState(null);
     
     useEffect(() => {
@@ -60,6 +61,7 @@ const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist }, ref) 
             () => {
                 activePlaylists.current = updateActivePlaylists(    
                         activePlaylists.current, playlist.id, active);
+                setIsChecked(active);
             },
             (error) => {
                 setError(error);
@@ -153,7 +155,7 @@ const  PlaylistSelectionItem = forwardRef(({ playlist, onRemovePlaylist }, ref) 
                     <Grid.Column textAlign='center' width={ 7 }>
                         <Checkbox 
                             toggle
-                            checked={ activePlaylists.current.includes(parseInt(playlist.id)) }
+                            checked={ isChecked }
                             onChange={ (event,data) => { onToggleActive( data.checked); } }
                             ref={ ref }
                             getSpotifyPlaylist={ getSpotifyPlaylist }
