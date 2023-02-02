@@ -1,72 +1,48 @@
-import React, { useState, useEffect } from "react";
-import { Button, Loader } from 'semantic-ui-react'
+import React, { useState, useContext } from "react";
+import { Button } from 'semantic-ui-react'
 
-import { like, unlike, liked } from '../api';
+import { like, unlike } from '../api';
+import { AppContext } from '../contexts/AppContext';
 
-function LikeButton(props) {
+function LikeButton() {
     const [error, setError] = useState(null);
-    const [isLoaded, setIsLoaded] = useState(false);
-    const [likedResponse, setLikedResponse] = useState([]);
+
+    const {
+        playingItem,
+        setLikedResponse,
+        likedResponse
+    } = useContext(AppContext);
 
     const toggleLiked = () => {
-        setIsLoaded(false);
         if(likedResponse[0]) {
             // unlike
-            unlike(props.trackId)
+            unlike(playingItem.item.id)
             .then(
                 (result) => {
-                    setIsLoaded(true);
                     setLikedResponse([false]);
                 },
                 (error) => {
-                    setIsLoaded(true);
                     setError(error);
                 }
             )
         } else {
             // like
-            like(props.trackId)
+            like(playingItem.item.id)
             .then(
                 (result) => {
-                    setIsLoaded(true);
                     setLikedResponse([true]);
                 },
                 (error) => {
-                    setIsLoaded(true);
                     setError(error);
                 }
             )
         }
     };
 
-    const checkLiked = () => {
-        liked(props.trackId)
-        .then(
-            (result) => {
-                setIsLoaded(true);
-                setLikedResponse(result.data);
-            },
-            (error) => {
-                setIsLoaded(true);
-                setError(error);
-            }
-        )
-    }
-
-    useEffect(() => {
-        checkLiked();
-    }, [])
-
     if (error) {
         return <div>Error: {error.message}</div>;
-    } else if (!isLoaded) {
-        return <Loader active />;
     } else {
-        if (likedResponse.length) {
-            return (
-                <Button basic color={likedResponse[0] ? 'pink' : 'grey'} icon='like' title='Like / Unlike' onClick={ toggleLiked } />
-            );
-        }
+        return <Button basic color={likedResponse.length && likedResponse[0] ? 'pink' : 'grey'} icon='like' title='Like / Unlike' onClick={ toggleLiked } />
     }
 }
   

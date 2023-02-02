@@ -2,11 +2,20 @@ import React, { useContext } from "react";
 import { Button, Icon } from 'semantic-ui-react'
 
 import { AppContext } from "../contexts/AppContext";
-import { next, previous, pause, play, getCurrentlyPlaying } from '../api';
+import { next, previous, pause, play, getCurrentlyPlaying, liked } from '../api';
 
 function CurrentlyPlayingPlaybackControls() {
 
-    const { playingItem, setPlayingItem } = useContext(AppContext);
+    const { playingItem, setPlayingItem, setLikedResponse } = useContext(AppContext);
+
+    const checkLiked = (trackId) => {
+        liked(trackId)
+        .then(
+            (result) => {
+                setLikedResponse(result.data);
+            }
+        )
+    }
 
     const nextTrack = () => {
         next()
@@ -60,6 +69,7 @@ function CurrentlyPlayingPlaybackControls() {
             .then(
                 (result) => {
                     setPlayingItem(result.data);
+                    checkLiked(result.data.item.id);
                     if(result.data && result.data.is_playing === true) {
                         setTimeout(getCurrentlyPlayingTrack, result.data.item.duration_ms - result.data.progress_ms + 100);
                     }

@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { Button, Item, Loader, Segment } from 'semantic-ui-react'
 
 import { AppContext } from '../contexts/AppContext';
-import { addToPlaylists, getCurrentlyPlaying, removeFromPlaylists } from '../api';
+import { addToPlaylists, getCurrentlyPlaying, removeFromPlaylists, liked } from '../api';
 import CurrentlyPlayingPlaybackControls from './CurrentlyPlayingPlaybackControls';
 import LikeButton from '../components/LikeButton';
 
@@ -11,7 +11,7 @@ function CurrentlyPlaying() {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
     
-    const { playlistRefs, activePlaylists, playingItem, setPlayingItem } = useContext(AppContext);
+    const { playlistRefs, activePlaylists, playingItem, setPlayingItem, setLikedResponse } = useContext(AppContext);
    
     const reloadPlaylists = () => {
         for(const id in activePlaylists.current) {
@@ -19,9 +19,22 @@ function CurrentlyPlaying() {
         }
     }
 
+    const checkLiked = (trackId) => {
+        liked(trackId)
+        .then(
+            (result) => {
+                setLikedResponse(result.data);
+            },
+            (error) => {
+                setError(error);
+            }
+        )
+    }
+
     useEffect(() => {
         getCurrentlyPlayingTrack();
     }, [])
+
 
     const getCurrentlyPlayingTrack = () => {
         getCurrentlyPlaying()
@@ -29,6 +42,7 @@ function CurrentlyPlaying() {
                 (result) => {
                     setIsLoaded(true);
                     setPlayingItem(result.data);
+                    checkLiked(result.data.item.id);
                     if(result.data && result.data.is_playing === true) {
                         setTimeout(getCurrentlyPlayingTrack, result.data.item.duration_ms - result.data.progress_ms + 100);
                     }
@@ -68,6 +82,7 @@ function CurrentlyPlaying() {
             )
     }
 
+
     if (error) {
         return <div>Error: {error.message}</div>;
     } else if (!isLoaded) {
@@ -89,7 +104,9 @@ function CurrentlyPlaying() {
                                 <Item.Extra>
                                     
                                     <Button.Group size='huge'>
-                                        <LikeButton trackId={ playingItem.item.id } />
+                                        <LikeButton 
+                                            trackId={ playingItem.item.id}
+                                        />
                                         <Button basic color='green' icon='plus circle' title='Add to Selected Playlists' onClick={ addTrackToPlaylists } />
                                         <Button basic color='red' icon='times circle' title='Remove from Selected Playlists' onClick={ removeTrackFromPlaylists } />
                                         <Button basic color='blue' icon='sync' title="Show Me What's Playing" onClick={ getCurrentlyPlayingTrack }/>

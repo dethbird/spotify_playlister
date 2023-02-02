@@ -10,6 +10,7 @@ function Index() {
   const playlists = useRef([]);
   const [playlistsError, setPlaylistsError] = useState(null);
   const [playlistsLoaded, setPlaylistsLoaded] = useState(false);
+  const [likedResponse, setLikedResponse] = useState([false]);
   const activePlaylists = useRef([]);
   const playlistRefs = useRef([]);
   const [playingItem, setPlayingItem] = useState(null);
@@ -25,7 +26,9 @@ function Index() {
         activePlaylists,
         playlistRefs,
         playingItem,
-        setPlayingItem
+        setPlayingItem,
+        likedResponse,
+        setLikedResponse
       }
     }>
       <Container>
